@@ -1,6 +1,7 @@
 from pathlib import Path
 from random import *
 
+NAME = "Wordle"
 # Create a list of accepted word
 path = Path(__file__).parent / "wordlist_fives.txt"
 with open(path, "r", encoding="utf-8") as f:
@@ -42,25 +43,42 @@ def is_won(score):
             return False
     return True
 
+def word_in_color(word, score):
+    colored_word = ""
+    for i in range(len(score)):
+        if score[i] == "green":
+            letter = word[i]
+            colored_word += f"\033[48;2;83;141;78m\033[1;97m {letter} \033[0m"
+        elif score[i] == "yellow":
+            letter = word[i]
+            colored_word += f"\033[48;2;181;159;59m\033[1;97m {letter} \033[0m"
+        elif score[i] == "gray":
+            letter = word[i]
+            colored_word += f"\033[48;2;58;58;60m\033[1;97m {letter} \033[0m"
+    return colored_word
+  
 def play():
     # Game Loop
     game_solution = choose_a_solution()
     turn = 1
     while True:
         print(f"Turn {turn}, {7-turn} attempts left")
-        game_guess = input("Choose a five letter word : ").lower()
+        game_guess = input("Choose a five letter word : \n").lower().strip()
         while True: 
             if is_valid(game_guess):
                 break
             else:
-                game_guess = input("Invalid word, please retry : ").lower()
+                game_guess = input("Invalid word, please retry : \n").lower().strip()
         score = compare_guess_to_solution(game_solution, game_guess)
-        print(score)
+        print(f"\033[A\033[2K{word_in_color(game_guess, score)}")
         if is_won(score):
-            print(f"YOU WON !!! (in {turn} attempt, congratulations)")
+            print(f"YOU WON !!! (in {turn} attempts, congratulations)")
             break
         elif turn == 6:
-            print("YOU LOST !!!")
+            colored_solution = ""
+            for char in game_solution:
+                colored_solution += f"\033[48;2;83;141;78m\033[1;97m {char} \033[0m"
+            print(f"YOU LOST !!!, the word was {colored_solution}")
             break
         turn += 1
 
