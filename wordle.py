@@ -7,7 +7,7 @@ def choose_a_solution():
     with open(path, "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
-    return lines[randint(1, len(lines))]
+    return lines[randint(0, len(lines)-1)]
 
 def compare_guess_to_solution(solution, guess):
     solution_pool = []
@@ -25,5 +25,6 @@ def compare_guess_to_solution(solution, guess):
         elif score[i] != "green":
             score[i] = "gray"
     return score
-print(compare_guess_to_solution("crane", "cloak"))
-print(compare_guess_to_solution("apple", "paper"))
+if __name__ == "__main__":
+    print(compare_guess_to_solution("crane", "cloak"))
+    print(compare_guess_to_solution("apple", "paper"))
