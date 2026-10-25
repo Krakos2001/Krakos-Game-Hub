@@ -1,2 +1,2 @@
-# Krakos-s-Game-Hub
+# Krakos-Game-Hub
 In-Terminal Game Hub
