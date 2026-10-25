@@ -1,5 +1,6 @@
 from pathlib import Path
 from random import *
+from msvcrt import getwch
 
 NAME = "Wordle"
 # Create a list of accepted word
@@ -9,6 +10,7 @@ with open(path, "r", encoding="utf-8") as f:
 
 def is_valid(guess):
     return guess in accepted
+
 def choose_a_solution():
     path = Path(__file__).parent / "wordle.txt"
 
@@ -48,29 +50,67 @@ def word_in_color(word, score):
     for i in range(len(score)):
         if score[i] == "green":
             letter = word[i]
-            colored_word += f"\033[48;2;83;141;78m\033[1;97m {letter} \033[0m"
+            colored_word += f"\033[48;2;83;141;78m\033[1;97m {letter.upper()} \033[0m"
         elif score[i] == "yellow":
             letter = word[i]
-            colored_word += f"\033[48;2;181;159;59m\033[1;97m {letter} \033[0m"
+            colored_word += f"\033[48;2;181;159;59m\033[1;97m {letter.upper()} \033[0m"
         elif score[i] == "gray":
             letter = word[i]
-            colored_word += f"\033[48;2;58;58;60m\033[1;97m {letter} \033[0m"
+            colored_word += f"\033[48;2;58;58;60m\033[1;97m {letter.upper()} \033[0m"
     return colored_word
   
+def show_message(text, rows_below):
+    # go down to the line under the board, write the text, come back up
+    print(f"\033[{rows_below}B\r\033[2K{text}\033[{rows_below}A", end="", flush=True)
+
+def read_word(rows_below):
+    letters = []
+    message_shown = False
+    draw_row(letters)
+    while True:
+        key = getwch()
+
+        if message_shown:
+            show_message("", rows_below)
+            message_shown = False
+
+        if key == "\x03":                      # Ctrl+C
+            raise KeyboardInterrupt
+        elif key in ("\x00", "\xe0"):          # arrow/function key
+            getwch()
+        elif key == "\x08":                    # Backspace
+            if letters:
+                letters.pop()
+        elif key == "\r":                      # Enter
+            if len(letters) == 5:
+                word = "".join(letters)
+                if is_valid(word):
+                    return word
+                show_message("Not in word list", rows_below)
+                message_shown = True
+        elif key.isascii() and key.isalpha():  # a letter
+            if len(letters) < 5:
+                letters.append(key.lower())
+
+        draw_row(letters)
+
 def play():
-    # Game Loop
     game_solution = choose_a_solution()
+
+    # draw the empty board: 6 rows of empty tiles
+    for _ in range(6):
+        draw_row([])
+        print()
+
     turn = 1
     while True:
-        print(f"Turn {turn}, {7-turn} attempts left")
-        game_guess = input("Choose a five letter word : \n").lower().strip()
-        while True: 
-            if is_valid(game_guess):
-                break
-            else:
-                game_guess = input("Invalid word, please retry : \n").lower().strip()
+        rows_below = 7 - turn                      # lines between the current row and the line under the board
+        print(f"\033[{rows_below}A", end="")       # go up to the current row
+        game_guess = read_word(rows_below)
         score = compare_guess_to_solution(game_solution, game_guess)
-        print(f"\033[A\033[2K{word_in_color(game_guess, score)}")
+        # repaint the row in colors, then go back down under the board
+        print("\r" + word_in_color(game_guess, score) + f"\033[{rows_below}B\r", end="", flush=True)
+
         if is_won(score):
             print(f"YOU WON !!! (in {turn} attempts, congratulations)")
             break
@@ -78,9 +118,18 @@ def play():
             colored_solution = ""
             for char in game_solution:
                 colored_solution += f"\033[48;2;83;141;78m\033[1;97m {char} \033[0m"
-            print(f"YOU LOST !!!, the word was {colored_solution}")
+            print(f"YOU LOST !!! The word was {colored_solution}")
             break
         turn += 1
+
+def draw_row(letters):
+    tiles = ""
+    for i in range(5):
+        if i < len(letters):
+            tiles += f"\033[48;2;86;87;88m\033[1;97m {letters[i].upper()} \033[0m"
+        else:
+            tiles += "\033[48;2;40;40;42m   \033[0m"
+    print("\r" + tiles, end="", flush=True)
 
 if __name__ == "__main__":
     play()
