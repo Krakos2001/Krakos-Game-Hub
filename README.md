@@ -1,6 +1,6 @@
 # Krakos Game Hub
 
-A terminal hub for mini-games, written in Python. Pick a game from an interactive menu, play it, and come back. The first game is a **Wordle** where you type directly into the tiles, just like the real thing.
+A terminal hub for mini-games, written in Python. Pick a game from an interactive menu, play it, and come back. The first games are **Wordle** and **Mastermind** where you type directly into the tiles, just like the real thing.
 
 > Made for [Pixl](https://pixl.hackclub.com) by Hack Club.
 
