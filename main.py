@@ -19,7 +19,7 @@ def load_games():
 
 def print_row(text, color=NORMAL):
     print(f"{color}{text:<{WIDTH}}{RESET}")
-
+    
 
 def draw_menu(options, selected):
     title = " ## WELCOME TO KRAKOS HUB ## ".center(WIDTH, "-")
@@ -59,6 +59,8 @@ def main():
 
     menu_height = len(options) + 4
     selected = 0
+
+    print("\033[2J\033[H", end="", flush=True) 
     draw_menu(options, selected)
 
     while True:

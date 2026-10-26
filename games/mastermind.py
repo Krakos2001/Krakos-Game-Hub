@@ -94,8 +94,8 @@ def play():
         elif turn == 10:
             colored_solution = ""
             for char in key:
-                colored_solution += f"\033[48;2;83;141;78m\033[1;97m {char.upper()} \033[0m"
-            print(f"YOU LOST !!! The word was {colored_solution}")
+                colored_solution += f"{colors_value[char]} {char.upper()} \033[0m"
+            print(f"YOU LOST !!! The code was {colored_solution}")
             break
         turn += 1
 
@@ -111,7 +111,7 @@ def draw_row(colors, scoring=None):
         tiles += "\033[48;2;255;255;255m   \033[0m"
     else:
         tiles += f"\033[48;2;231;76;60m {scoring[0]} \033[0m"
-        tiles += f"\033[48;2;255;255;255m {scoring[1]} \033[0m"
+        tiles += f"\033[48;2;255;255;255m\033[1m\033[38;2;30;30;30m {scoring[1]} \033[0m"
     print("\r" + tiles, end="", flush=True)
 
 if __name__ == "__main__":
