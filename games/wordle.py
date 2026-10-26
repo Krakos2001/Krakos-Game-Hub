@@ -4,7 +4,7 @@ from msvcrt import getwch
 
 NAME = "Wordle"
 # Create a list of accepted word
-path = Path(__file__).parent / "wordlist_fives.txt"
+path = Path(__file__).parent /  "wordlist_fives.txt"
 with open(path, "r", encoding="utf-8") as f:
     accepted = f.read().splitlines()
 
@@ -117,7 +117,7 @@ def play():
         elif turn == 6:
             colored_solution = ""
             for char in game_solution:
-                colored_solution += f"\033[48;2;83;141;78m\033[1;97m {char} \033[0m"
+                colored_solution += f"\033[48;2;83;141;78m\033[1;97m {char.upper()} \033[0m"
             print(f"YOU LOST !!! The word was {colored_solution}")
             break
         turn += 1
