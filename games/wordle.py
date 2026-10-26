@@ -1,6 +1,7 @@
 from pathlib import Path
 from random import *
 from msvcrt import getwch
+from time import time
 
 NAME = "Wordle"
 # Create a list of accepted word
@@ -95,6 +96,7 @@ def read_word(rows_below):
         draw_row(letters)
 
 def play():
+    starting_time = time()
     game_solution = choose_a_solution()
 
     # draw the empty board: 6 rows of empty tiles
@@ -112,7 +114,8 @@ def play():
         print("\r" + word_in_color(game_guess, score) + f"\033[{rows_below}B\r", end="", flush=True)
 
         if is_won(score):
-            print(f"YOU WON !!! (in {turn} attempts, congratulations)")
+            ending_time = time()
+            print(f"YOU WON !!! (in {turn} attempts and {ending_time - starting_time} seconds, congratulations)")
             break
         elif turn == 6:
             colored_solution = ""
