@@ -75,7 +75,7 @@ def read_word(rows_below):
             show_message("", rows_below)
             message_shown = False
 
-        if key == "\x03":                      # Ctrl+C
+        if key == "\x03" or key == "\x1b":     # Ctrl+C and Esc
             raise KeyboardInterrupt
         elif key in ("\x00", "\xe0"):          # arrow/function key
             getwch()
