@@ -1,28 +1,42 @@
 # Krakos Game Hub
 
-A terminal hub for mini-games, written in Python. Pick a game from an interactive menu, play it, and come back. The first games are **Wordle** and **Mastermind** where you type directly into the tiles, just like the real thing.
+# Description
+
+A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved and are tracked with achievements. Made in Python
 
 > Made for [Pixl](https://pixl.hackclub.com/refers?code=9B6LZH) by Hack Club.
 
+### Hub menu
 ![Hub menu](images/menu.png)
+
+### Wordle board
 ![Wordle board](images/wordle.png)
+
+### Mastermind board
+![Mastermind board](images/mastermind.png)
 
 ## Features
 
-- **Interactive menu**: move with the arrow keys or jump to a game with its number, then press Enter.
-- **Automatic game discovery**: drop a new game in the `games/` folder and it shows up in the menu by itself.
-- **Wordle with a live board**: six rows of tiles, you type inside the tiles, Backspace works, invalid words are refused, and the row turns green, yellow or gray when you validate.
-- **Two word lists**: a smaller list of common words for the solutions, and a much larger one for the words you are allowed to guess.
-- **Colors with ANSI escape codes**: no external libraries, only Python's standard library.
+- **No UI**: My majestic graphics are made with ANSI escape codes, no external libraries.
+- **Interact with the terminal**, isn't played with consecutive lines, but the program actually deletes/modify lines to simulate a UI.
+- **Automatic game discovery**: more of a coding ease than an user feature, but adding game is made easy: drop a new game in the `games/` folder and it shows up in the menu by itself (see **Adding a game** for more info).
+- **Game tracking and achievements**: WIP but every win, loss or even abandoned game is tracked to give the most precise stats you could imagine (yes I'm a nerd, how could you tell).
 
 ## Requirements
 
-- **Windows only** for now, because key presses are read with the `msvcrt` module.
+- **Windows only** for now as key presses are read with the `msvcrt` module, might integrate Linux and Mac in future version.
 - Python 3.13 (the version it was tested with).
-- Run it in a real terminal such as Windows Terminal, PowerShell or the VS Code integrated terminal. The VS Code *Output* panel does not work.
-- Make the terminal window tall enough to show the whole menu and the six-row board (about 12 lines is safe).
+- Runs directly in the IDE, so any code editor is fine.
+- Make the terminal window tall enough to show the different menus and screens (about 12 lines is safe).
+- Perfomance wise, its really not an issue lol, here are my specs:
+    * **RAM** : 4GB @ 1867MHz
+    * **SSD** : 120GB but about 2Mo is fine
+    * **CPU** : Intel(R) Core(TM) m3-8100Y CPU @ 1.10GHz (1.61 GHz)
+    * **GPU** : iGPU with 128MB **VRAM**
 
 ## How to run
+
+Download the code and run main.py, or use the following commands:
 
 ```
 git clone https://github.com/Krakos2001/Krakos-Game-Hub.git
@@ -61,6 +75,20 @@ You have six attempts. After each guess:
 - **Yellow**: the letter is in the word, but in another place.
 - **Gray**: the letter is not in the word (or all its copies are already accounted for).
 
+### In Mastermind
+
+| Key | Action |
+|---|---|
+| Letters associated with colors | Type the corresponding color |
+| Backspace | Delete the last color |
+| Enter | Validate the combination |
+| Ctrl+C | Leave the game and go back to the hub |
+
+You have 4 attemps. After each attempts:
+
+- The number in the **Red** box at the right correspond to the number of colors that were at their exact positions
+- The number in the **White** box at the right correspond to the number of colors that are in the key (excluding one counted in the **Red** box) but weren't in their right positions.
+
 ## Project structure
 
 ```
@@ -68,9 +96,13 @@ Krakos-Game-Hub/
 ├── main.py              # the hub: finds the games and shows the menu
 └── games/
     ├── __init__.py      # makes games/ a package (empty)
+    |── mastermind.py    # the Mastemind game
     ├── wordle.py        # the Wordle game
-    ├── wordle.txt       # solution words
-    └── wordlist_fives.txt   # accepted guesses
+    ├── wordle.txt       # solution words for Wordle
+    └── wordlist_fives.txt   # accepted guesses for Wordle
+        └── logs/
+            └── game_logs.jsonl     # created when a game is saved, hold the records of game
+
 ```
 
 ## Adding a game
@@ -98,11 +130,10 @@ Restart the hub and "My Game" appears in the menu. If your game needs data files
 
 ## Status and ideas
 
-Working now: the hub, Wordle, and the keyboard navigation.
+Working now: better logging of games, achievements, stats display
 
 Ideas for later:
 
 - More mini-games
-- Esc to go back to the hub from inside a game
 - Cross-platform key reading (Mac and Linux)
-- A player name and a score shared between games
+- A multiplayer, and maybe an Online mode
