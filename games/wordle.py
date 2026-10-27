@@ -4,6 +4,7 @@ from msvcrt import getwch
 from time import time
 from datetime import datetime, timezone
 import json
+import secrets
 
 NAME = "Wordle"
 LOG_VERSION = 1
@@ -67,9 +68,36 @@ def show_message(text, rows_below):
     # go down to the line under the board, write the text, come back up
     print(f"\033[{rows_below}B\r\033[2K{text}\033[{rows_below}A", end="", flush=True)
 
+def load_records():
+    log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
+    record = []
+    try:
+        with  open(log_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    record.append(json.loads(line))
+                except ValueError:
+                    continue
+    except FileNotFoundError:
+        return record
+    return record
+
+def generate_unique_id():
+    existing_records = load_records()
+    existing_ids = {record["id"] for record in existing_records if "id" in record}
+    while True:
+        new_id = secrets.token_hex(3)
+
+        if new_id not in existing_ids:
+            return new_id
+
 def save_stat(result, duration, solution, guesses_list):
     date = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    line = {"v": LOG_VERSION, "date": date, "game": "Wordle", "result": result, "duration": duration, "details": {"solution": solution, "guesses": guesses_list}}
+    game_id = generate_unique_id()
+    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Wordle", "result": result, "duration": duration, "details": {"solution": solution, "guesses": guesses_list}}
     log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with  open(log_path, "a", encoding="utf-8") as f:
@@ -130,7 +158,7 @@ def play():
 
         if is_won(score):
             ending_time = time()
-            save_stat("won", time() - starting_time, game_solution, guesses_list)
+            save_stat("won", ending_time - starting_time, game_solution, guesses_list)
             print(f"YOU WON !!! (in {turn} attempts and {ending_time - starting_time} seconds, congratulations)")
             break
         elif turn == 6:
@@ -141,7 +169,6 @@ def play():
             print(f"YOU LOST !!! The word was {colored_solution}")
             break
         turn += 1
-    print(guesses_list)
 
 def draw_row(letters):
     tiles = ""
