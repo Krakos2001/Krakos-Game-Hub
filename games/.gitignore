@@ -1,0 +1,18 @@
+# Personal game stats (each player has their own)
+logs/
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments, if you ever make one
+.venv/
+venv/
+
+# PyInstaller output (the .exe goes on GitHub Releases, not in the repo)
+build/
+dist/
+
+# Windows
+Thumbs.db
+Desktop.ini
