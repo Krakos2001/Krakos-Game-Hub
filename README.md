@@ -2,7 +2,7 @@
 
 A terminal hub for mini-games, written in Python. Pick a game from an interactive menu, play it, and come back. The first games are **Wordle** and **Mastermind** where you type directly into the tiles, just like the real thing.
 
-> Made for [Pixl](https://pixl.hackclub.com) by Hack Club.
+> Made for [Pixl](https://pixl.hackclub.com/refers?code=9B6LZH) by Hack Club.
 
 ![Hub menu](images/menu.png)
 ![Wordle board](images/wordle.png)
