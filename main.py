@@ -71,14 +71,11 @@ def compute_stat(records, game=None):
     else:
         fastest_win = min(won_records, key=lambda record: record["duration"])
         fastest_win_time = fastest_win["duration"]
-    
 
-
-            
+def show_stats():
 
 def print_row(text, color=NORMAL):
     print(f"{color}{text:<{WIDTH}}{RESET}")
-    
 
 def draw_menu(options, selected):
     title = " ## WELCOME TO KRAKOS HUB ## ".center(WIDTH, "-")
@@ -123,6 +120,7 @@ def main():
     draw_menu(options, selected)
 
     while True:
+        # First Page
         previous = selected
         key = read_key()
 
