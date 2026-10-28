@@ -18,8 +18,7 @@ def load_games():
 def print_row(text, color=NORMAL):
     print(f"{color}{text:<{WIDTH}}{RESET}")
 
-def draw_menu(options, selected):
-    title = " ## WELCOME TO KRAKOS HUB ## ".center(WIDTH, "-")
+def draw_menu(title, options, selected):
     print_row(title)
     print_row("Available Games :")
     last = len(options) - 1
@@ -46,22 +45,14 @@ def read_key():
         return str((AZERTY_ROW.index(key) + 1) % 10)
     return key
 
-
-def main():
-    loaded_games = load_games()
-    options = []
-    for game in loaded_games:
-        options.append(game.NAME)
-    options.append("QUIT")
-
-    menu_height = len(options) + 4
-    selected = 0
+def run_menu(title, options, selected=0):
 
     print("\033[2J\033[H", end="", flush=True) 
-    draw_menu(options, selected)
+    draw_menu(title, options, selected)
+
+    menu_height = len(options) + 4
 
     while True:
-        # First Page
         previous = selected
         key = read_key()
 
@@ -71,18 +62,9 @@ def main():
             selected = (selected + 1) % len(options)
         elif key == "\r":                       # Enter (next step)
             if selected == len(options) - 1:
-                return
+                return None
             else:
-                print("\033[2J\033[H", end="", flush=True)
-                game = loaded_games[selected]
-                try:
-                    game.play()
-                    print("Press any key to return to the menu")
-                    read_key()
-                except KeyboardInterrupt:
-                    pass
-                print("\033[2J\033[H", end="", flush=True)
-                draw_menu(options, selected)
+                return selected
             
         elif key == "\x03" or key == "\x1b":    # Ctrl+C or Esc
             return
@@ -90,13 +72,35 @@ def main():
             value = int(key)
             if value == 0:
                 selected = len(options) - 1     # 0 = QUIT, the last row
-            elif value <= len(loaded_games):
+            elif value <= len(options) - 1:
                 selected = value - 1
 
-        if selected != previous:                # redraw only when something changed
+        if selected != previous:
             print(f"\033[{menu_height}A", end="", flush=True)
-            draw_menu(options, selected)
+            draw_menu(title, options, selected)
 
+def main():
+    loaded_games = load_games()
+    options = []
+    for game in loaded_games:
+        options.append(game.NAME)
+    options.append("QUIT")
+
+    last_position = 0
+    title = " ## WELCOME TO KRAKOS HUB ## ".center(WIDTH, "-")
+    while True:
+        choice = run_menu(title, options, last_position)
+        if choice is None:
+            return
+        last_position = choice
+        game = loaded_games[choice]
+        print("\033[2J\033[H", end="", flush=True)
+        try:
+            game.play()
+            print("Press any key to return to the menu")
+            read_key()
+        except KeyboardInterrupt:
+            pass
 
 if __name__ == "__main__":
     main()
