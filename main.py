@@ -2,6 +2,7 @@ import importlib
 import pkgutil
 import games
 from menu import run_menu, read_key, WIDTH
+from stats import stats_menu
 
 def load_games():
     loaded_games = []
@@ -20,12 +21,12 @@ def main():
     last_position = 0
     title = " ## WELCOME TO KRAKOS HUB ## ".center(WIDTH, "-")
     while True:
-        choice = run_menu(title, options, last_position)
+        choice = run_menu(title, options, "Available Modules :", last_position)
         if choice is None:
             return
         last_position = choice
         if choice == len(loaded_games):
-            print("Stats here")
+            stats_menu(load_games())
 
         else:
             game = loaded_games[choice]

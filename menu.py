@@ -9,9 +9,9 @@ HIGHLIGHT = "\033[48;2;200;200;200m\033[1m\033[38;2;30;30;30m"  # light gray, da
 def print_row(text, color=NORMAL):
     print(f"{color}{text:<{WIDTH}}{RESET}")
 
-def draw_menu(title, options, selected):
+def draw_menu(title, options, selected, subtitle="Available Games :"):
     print_row(title)
-    print_row("Available Games :")
+    print_row(subtitle)
     last = len(options) - 1
     for i, option in enumerate(options):
         if i == last:
@@ -36,10 +36,10 @@ def read_key():
         return str((AZERTY_ROW.index(key) + 1) % 10)
     return key
 
-def run_menu(title, options, selected=0):
+def run_menu(title, options, subtitle=None, selected=0):
 
     print("\033[2J\033[H", end="", flush=True) 
-    draw_menu(title, options, selected)
+    draw_menu(title, options, selected, subtitle)
 
     menu_height = len(options) + 4
 
@@ -68,4 +68,4 @@ def run_menu(title, options, selected=0):
 
         if selected != previous:
             print(f"\033[{menu_height}A", end="", flush=True)
-            draw_menu(title, options, selected)
+            draw_menu(title, options, selected, subtitle)

@@ -1,6 +1,7 @@
 
 import json
 from pathlib import Path
+from menu import WIDTH, run_menu, print_row, read_key
 
 def load_records():
     log_path = Path(__file__).parent / "games" /  "logs" / "game_logs.jsonl"
@@ -67,29 +68,60 @@ def show_stats(game=None):
     stats = compute_stat(records, game)
     if game is None:
         game = "Global"
-    print(f"{game.upper()} OVERVIEW")
-    print(f"Games played : {stats["games_played"]}")
-    print(f"Won / Lost / Abandoned : {stats["won"]} / {stats["lost"]} / {stats["abandoned"]}")
+
+    print("\033[2J\033[H", end="", flush=True) 
+    title = f" ## {game.upper()} OVERVIEW ## ".center(WIDTH, "-")
+    print_row(title)
+    
+    print_row(f"Games played : {stats["games_played"]}")
+    print_row(f"Won / Lost / Abandoned : {stats["won"]} / {stats["lost"]} / {stats["abandoned"]}")
     
     if stats["win_rate"] is None:
-        print(f"Win rate : n/a (No finished games)")
+        print_row(f"Win rate : n/a (No finished games)")
     else:
-        print(f"Win rate : {stats["win_rate"] * 100:.2f}% ({stats["won"]}/{stats["won"] + stats["lost"]})")
+        print_row(f"Win rate : {stats["win_rate"] * 100:.2f}% ({stats["won"]}/{stats["won"] + stats["lost"]})")
     
     if stats["abandon_rate"] is None:
-        print(f"Abandon rate : n/a (No played games)")
+        print_row(f"Abandon rate : n/a (No played games)")
     else:
-        print(f"Abandon rate : {stats["abandon_rate"] * 100:.2f}% ({stats["abandoned"]}/{stats["games_played"]})")
+        print_row(f"Abandon rate : {stats["abandon_rate"] * 100:.2f}% ({stats["abandoned"]}/{stats["games_played"]})")
     
     if stats["avg_attempts_per_win"] is None:
-        print(f"Avg attempts per win : n/a (No won games)")
+        print_row(f"Avg attempts per win : n/a (No won games)")
     else:
-        print(f"Avg attempts per win : {stats["avg_attempts_per_win"]:.2f}")
+        print_row(f"Avg attempts per win : {stats["avg_attempts_per_win"]:.2f}")
 
     if stats["fastest_win_time"] is None:
-        print(f"Fastest win : n/a (No won games)")
+        print_row(f"Fastest win : n/a (No won games)")
     else:
-        print(f"Fastest win : {stats["fastest_win_time"]:.3f}s")
+        print_row(f"Fastest win : {stats["fastest_win_time"]:.3f}s")
+    print_row("-" * WIDTH)
+    
+
+def stats_menu(loaded_games):
+    options = ["Global"]
+    for game in loaded_games:
+        options.append(game.NAME)
+    options.append("BACK")
+
+    last_position = 0
+    title = " ## STATISTICS ## ".center(WIDTH, "-")
+    while True:
+        choice = run_menu(title, options, "Available Stats :", last_position)
+        if choice is None:
+            return
+        last_position = choice
+        if choice == 0:
+            name = None
+        else:
+            name = loaded_games[choice - 1].NAME
+        print("\033[2J\033[H", end="", flush=True)
+        try:
+            show_stats(name)
+            print("Press any key to return to the menu")
+            read_key()
+        except KeyboardInterrupt:
+            pass
 
 if __name__ == "__main__":
     show_stats()
