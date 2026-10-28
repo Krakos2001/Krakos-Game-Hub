@@ -53,7 +53,17 @@ def read_key(starting_time, points):
             save_stat("abandoned", time() - starting_time, points)
             raise KeyboardInterrupt
         elif key in ("\x00", "\xe0"):          # arrow/function key
-            getwch()
+            new_key = getwch()
+            if new_key == "H":
+                return "UP"
+            elif new_key == "P":
+                return "DOWN"
+            elif new_key == "K":
+                return "LEFT"
+            elif new_key == "M":
+                return "RIGHT"
+            else:
+                return
         elif key == "\r":                      # Enter
             pass
 
