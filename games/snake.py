@@ -107,14 +107,13 @@ def play():
                     game_map[row][column] = "\033[48;2;40;40;42m   \033[0m"
 
         # print the game map
+        print("\033[2J\033[H", end="", flush=True)
         for row in game_map:
             print("".join(row))
         print("\n")
         
-        move = input("Enter your move: ")
-        if move == "q":
-            break
-        elif move == "w":
+        move = read_key(starting_time, 0)
+        if move == "UP":
             if [snake_row - 1, snake_column] in snake_body:
                 print("You died!")
                 break
@@ -128,7 +127,7 @@ def play():
                 # remove the last body part if it's not eating the food
                 snake_body.pop(0)
         
-        elif move == "s":
+        elif move == "DOWN":
             if [snake_row + 1, snake_column] in snake_body:
                 print("You died!")
                 break
@@ -141,7 +140,7 @@ def play():
             else:
                 snake_body.pop(0)
         
-        elif move == "a":
+        elif move == "LEFT":
             if [snake_row, snake_column - 1] in snake_body:
                 print("You died!")
                 break
@@ -154,7 +153,7 @@ def play():
             else:
                 snake_body.pop(0)
         
-        elif move == "d":
+        elif move == "RIGHT":
             if [snake_row, snake_column + 1] in snake_body:
                 print("You died!")
                 break
@@ -166,10 +165,7 @@ def play():
                     food_column = randint(0, COLUMNS - 1)
             else:
                 snake_body.pop(0)
-        
-        else:
-            print("Invalid move!")
-            continue
+
 
 if __name__ == "__main__":
     play()

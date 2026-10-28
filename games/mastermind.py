@@ -5,7 +5,7 @@ from time import time
 from datetime import datetime, timezone
 import json
 import secrets
-from main import LOG_VERSION
+from menu import LOG_VERSION
 
 NAME = "Mastermind"
 
@@ -18,6 +18,10 @@ colors_value = {
     "o": "\033[48;2;230;126;34m\033[1;97m",
     "p": "\033[48;2;155;89;182m\033[1;97m",
 }
+
+last_line_of_board = ""
+for values in colors_value:
+    last_line_of_board += f"{colors_value[values]} {values.upper()} \033[0m"
 
 def load_records():
     log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
@@ -117,10 +121,13 @@ def play():
     for _ in range(10):
         draw_row([])
         print()
+    print("\033[48;2;40;40;42m C O L O R S : \033[0m")
+    print(last_line_of_board)
+    
 
     turn = 1
     while True:
-        rows_below = 11 - turn                      # lines between the current row and the line under the board
+        rows_below = 13 - turn                      # lines between the current row and the line under the board
         print(f"\033[{rows_below}A", end="")       # go up to the current row
         game_guess = read_combination(rows_below, starting_time, key, guesses_list)
         guesses_list.append(game_guess)
