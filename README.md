@@ -2,7 +2,7 @@
 
 # Description
 
-A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved and are tracked with achievements. Made in Python
+A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved and are tracked with achievements. Made mostly in Python
 
 > Made for [Pixl](https://pixl.hackclub.com/refers?code=9B6LZH) by Hack Club.
 
@@ -84,16 +84,18 @@ You have six attempts. After each guess:
 | Enter | Validate the combination |
 | Ctrl+C | Leave the game and go back to the hub |
 
-You have 4 attemps. After each attempts:
+You have 10 attemps. After each attempts:
 
-- The number in the **Red** box at the right correspond to the number of colors that were at their exact positions
-- The number in the **White** box at the right correspond to the number of colors that are in the key (excluding one counted in the **Red** box) but weren't in their right positions.
+- The number in the **Red** box on the right correspond to the number of colors that were at their exact positions
+- The number in the **White** box on the right correspond to the number of colors that are in the key (excluding one counted in the **Red** box) but weren't in their right positions.
 
 ## Project structure
 
 ```
 Krakos-Game-Hub/
-├── main.py              # the hub: finds the games and shows the menu
+├── main.py              # the hub: finds the games
+├── menu.py              # shows the menu
+├── stats.py             # calculate stats
 └── games/
     ├── __init__.py      # makes games/ a package (empty)
     |── mastermind.py    # the Mastemind game
