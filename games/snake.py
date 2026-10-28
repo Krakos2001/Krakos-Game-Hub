@@ -5,10 +5,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 import json
 import secrets
-from main import LOG_VERSION
+from menu import LOG_VERSION
 
 ROWS = 10
-COLMUNS = 10
+COLUMNS = 10
+
+NAME = "Snake"
 
 def load_records():
     log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
@@ -74,23 +76,23 @@ def play():
     # generate the game maps
     for row in range(ROWS):
         game_map.append([])
-        for column in range(COLMUNS):
+        for column in range(COLUMNS):
             game_map[row].append("\033[48;2;40;40;42m   \033[0m")
 
     # pick the snake starting cordinate
     snake_row = randint(0, ROWS - 1)
-    snake_column = randint(0, COLMUNS - 1)
+    snake_column = randint(0, COLUMNS - 1)
 
     snake_body = []
     snake_body.append([snake_row, snake_column])
 
     # pick the food cordinate
     food_row = randint(0, ROWS - 1)
-    food_column = randint(0, COLMUNS - 1)
+    food_column = randint(0, COLUMNS - 1)
 
     while True:
         # if the snake in our of the borders, the game end
-        if snake_row < 0 or snake_row > ROWS - 1 or snake_column < 0 or snake_column > COLMUNS - 1:
+        if snake_row < 0 or snake_row > ROWS - 1 or snake_column < 0 or snake_column > COLUMNS - 1:
             print("You lose!, since you can't teleport trough the walls")
             break
         # set the snake body
@@ -100,7 +102,7 @@ def play():
         # set the food
         game_map[food_row][food_column] = "\033[48;2;231;76;60m   \033[0m"
         for row in range(ROWS):
-            for column in range(COLMUNS):
+            for column in range(COLUMNS):
                 if [row, column] not in snake_body and [row, column] != [food_row, food_column]:
                     game_map[row][column] = "\033[48;2;40;40;42m   \033[0m"
 
@@ -121,7 +123,7 @@ def play():
             if [food_row, food_column] in snake_body:
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLMUNS - 1)
+                    food_column = randint(0, COLUMNS - 1)
             else:
                 # remove the last body part if it's not eating the food
                 snake_body.pop(0)
@@ -135,7 +137,7 @@ def play():
             if [food_row, food_column] in snake_body:
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLMUNS - 1)
+                    food_column = randint(0, COLUMNS - 1)
             else:
                 snake_body.pop(0)
         
@@ -148,7 +150,7 @@ def play():
             if [food_row, food_column] in snake_body:
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLMUNS - 1)
+                    food_column = randint(0, COLUMNS - 1)
             else:
                 snake_body.pop(0)
         
@@ -161,7 +163,7 @@ def play():
             if [food_row, food_column] in snake_body:
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLMUNS - 1)
+                    food_column = randint(0, COLUMNS - 1)
             else:
                 snake_body.pop(0)
         

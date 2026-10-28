@@ -5,7 +5,7 @@ from time import time
 from datetime import datetime, timezone
 import json
 import secrets
-from main import LOG_VERSION
+from menu import LOG_VERSION
 
 NAME = "Wordle"
 
