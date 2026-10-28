@@ -4,6 +4,8 @@ import games
 from menu import run_menu, read_key, WIDTH
 from stats import stats_menu
 
+LOG_VERSION = 1
+
 def load_games():
     loaded_games = []
     for item in pkgutil.iter_modules(games.__path__):

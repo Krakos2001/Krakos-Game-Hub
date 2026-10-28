@@ -5,9 +5,10 @@ from time import time
 from datetime import datetime, timezone
 import json
 import secrets
+from main import LOG_VERSION
 
 NAME = "Wordle"
-LOG_VERSION = 1
+
 # Create a list of accepted word
 path = Path(__file__).parent /  "wordlist_fives.txt"
 with open(path, "r", encoding="utf-8") as f:

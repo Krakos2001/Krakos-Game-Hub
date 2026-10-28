@@ -5,9 +5,10 @@ from time import time
 from datetime import datetime, timezone
 import json
 import secrets
+from main import LOG_VERSION
 
 NAME = "Mastermind"
-LOG_VERSION = 1
+
 color_list = ["r", "g", "b", "y", "o", "p"]
 colors_value = {
     "r": "\033[48;2;231;76;60m\033[1;97m",
