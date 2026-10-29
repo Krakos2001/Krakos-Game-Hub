@@ -117,9 +117,7 @@ def play():
         sleep(0.15)
         move = read_key(starting_time, 0)
 
-        
-
-        if move == None:
+        if move is None:
             move = last_move
 
         if (DIRECTION_ORDER[last_move] - DIRECTION_ORDER[move]) % 4 in [2, 4]:
