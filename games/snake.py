@@ -39,21 +39,26 @@ def generate_unique_id():
         if new_id not in existing_ids:
             return new_id
 
-def save_stat(score, duration):
+def save_stat(result, score, duration):
     date = datetime.now(timezone.utc).isoformat(timespec="seconds")
     game_id = generate_unique_id()
-    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Snake", "result": "Non-Binary GameMode", "duration": duration, "details": {"score": score}}
+    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Snake", "result": result, "duration": duration, "details": {"score": score}}
     log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with  open(log_path, "a", encoding="utf-8") as f:
         f.write(json.dumps(line) + "\n")
 
-def read_key(starting_time, points):
+def get_best_score():
+    # best score of all the finished Snake games (0 if there is none yet)
+    scores = [record["details"]["score"] for record in load_records()
+              if record.get("game") == "Snake" and record.get("result") == "finished"]
+    return max(scores, default=0)
+
+def read_key():
     while kbhit():
         key = getwch()
 
         if key == "\x03" or key == "\x1b":     # Ctrl+C and Esc
-            save_stat("abandoned", time() - starting_time, points)
             raise KeyboardInterrupt
         elif key in ("\x00", "\xe0"):          # arrow/function key
             new_key = getwch()
@@ -70,24 +75,36 @@ def read_key(starting_time, points):
         elif key == "\r":                      # Enter
             pass
 
-def dying(score, starting_time):
+def dying(score, starting_time, best_score):
     ending_time = time()
     while kbhit():
         getwch()
-    save_stat(score, ending_time - starting_time)
-    print("You Died")
-    
+    save_stat("finished", score, ending_time - starting_time)
+    print(f"You Died, score : {score}")
+    if score > best_score:
+        print(f"NEW HIGH SCORE ! (previous best : {best_score})")
+    else:
+        print(f"Best score : {best_score}")
+
+def abandon(score, starting_time):
+    ending_time = time()
+    while kbhit():
+        getwch()
+    save_stat("abandoned", score, ending_time - starting_time)
+    print("Game abandoned")
 
 def play():
     starting_time = time()
     game_map = []
     score = 0
+    best_score = get_best_score()       # read once, not at every tick
 
     # generate the game maps
     for row in range(ROWS):
         game_map.append([])
         for column in range(COLUMNS):
             game_map[row].append("\033[48;2;40;40;42m   \033[0m")
+        
 
     # pick the snake starting cordinate
     snake_row = 5
@@ -104,7 +121,7 @@ def play():
     while True:
         # if the snake in our of the borders, the game end
         if snake_row < 0 or snake_row > ROWS - 1 or snake_column < 0 or snake_column > COLUMNS - 1:
-            dying(score, starting_time)
+            dying(score, starting_time, best_score)
             break
         # set the snake body
         for body_part in snake_body:
@@ -121,10 +138,14 @@ def play():
         print("\033[H", end="", flush=True)
         for row in game_map:
             print("".join(row))
-        print("\n")
+        print(f"\033[48;2;40;40;42m S C O R E : {score} / P R : {max(best_score, score)} \033[0m")
 
         sleep(0.15)
-        move = read_key(starting_time, 0)
+        try:
+            move = read_key()
+        except KeyboardInterrupt:
+            abandon(score, starting_time)
+            break
 
         if move is None:
             move = last_move
@@ -134,7 +155,7 @@ def play():
 
         if move == "UP":
             if [snake_row - 1, snake_column] in snake_body:
-                dying(score, starting_time)
+                dying(score, starting_time, best_score)
                 break
             snake_body.append([snake_row - 1, snake_column])
             snake_row -= 1
@@ -149,7 +170,7 @@ def play():
         
         elif move == "DOWN":
             if [snake_row + 1, snake_column] in snake_body:
-                dying(score, starting_time)
+                dying(score, starting_time, best_score)
                 break
             snake_body.append([snake_row + 1, snake_column])
             snake_row += 1
@@ -163,7 +184,7 @@ def play():
         
         elif move == "LEFT":
             if [snake_row, snake_column - 1] in snake_body:
-                dying(score, starting_time)
+                dying(score, starting_time, best_score)
                 break
             snake_body.append([snake_row, snake_column - 1])
             snake_column -= 1
@@ -177,7 +198,7 @@ def play():
         
         elif move == "RIGHT":
             if [snake_row, snake_column + 1] in snake_body:
-                dying(score, starting_time)
+                dying(score, starting_time, best_score)
                 break
             snake_body.append([snake_row, snake_column + 1])
             snake_column += 1
