@@ -95,7 +95,8 @@ You have 10 attemps. After each attempts:
 Krakos-Game-Hub/
 ├── main.py              # the hub: finds the games
 ├── menu.py              # shows the menu
-├── stats.py             # calculate stats
+├── stats.py             # calculate and show the stats
+├── records.py           # reads and writes the game logs (shared by every game)
 └── games/
     ├── __init__.py      # makes games/ a package (empty)
     |── mastermind.py    # the Mastemind game
@@ -109,18 +110,25 @@ Krakos-Game-Hub/
 
 ## Adding a game
 
-Every game is a Python file in `games/` that has two things:
+Every game is a Python file in `games/` that has three things:
 
 1. a variable `NAME`, the text shown in the menu
-2. a function `play()`, which the hub calls when the player picks the game
+2. a variable `GAME_TYPE`: `"win_loss"` if the game ends with a win or a loss, `"score"` if it ends with a score
+3. a function `play()`, which the hub calls when the player picks the game
 
 ```python
 # games/my_game.py
+from records import save_stat
+
 NAME = "My Game"
+GAME_TYPE = "win_loss"
 
 def play():
     ...
+    save_stat(NAME, "won", duration, {"solution": ...})
 ```
+
+`save_stat` (from `records.py`) writes the game in the logs, so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"` or `"abandoned"` with its score in the details, and can have its own stats page by defining a function `show_stats()`.
 
 Restart the hub and "My Game" appears in the menu. If your game needs data files, put them in `games/` and build their paths with `Path(__file__).parent`, so they are found wherever the hub is launched from.
 

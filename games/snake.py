@@ -1,60 +1,63 @@
-from random import *
+from random import choice
 from msvcrt import getwch, kbhit
-from time import time, sleep
-from datetime import datetime, timezone
-from pathlib import Path
-import json
-import secrets
-from menu import LOG_VERSION
+from time import time, sleep, monotonic
+from menu import WIDTH, print_row
+from records import save_stat, get_best_score, load_records
 
-ROWS = 10  
+ROWS = 10
 COLUMNS = 10
-DIRECTION_ORDER = {"UP":1, "RIGHT":2, "DOWN":3, "LEFT":4}
+TICK = 0.15            # seconds between two moves of the snake
+DIRECTIONS = {"UP": (-1, 0), "DOWN": (1, 0), "LEFT": (0, -1), "RIGHT": (0, 1)}
+OPPOSITE = {"UP": "DOWN", "DOWN": "UP", "LEFT": "RIGHT", "RIGHT": "LEFT"}
+
+EMPTY = "\033[48;2;40;40;42m   \033[0m"
+BODY = "\033[48;2;46;204;113m   \033[0m"
+FOOD = "\033[48;2;231;76;60m   \033[0m"
 
 NAME = "Snake"
+GAME_TYPE = "score"
 
-def load_records():
-    log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
-    record = []
-    try:
-        with  open(log_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    record.append(json.loads(line))
-                except ValueError:
-                    continue
-    except FileNotFoundError:
-        return record
-    return record
+def show_stats():
+    records = [record for record in load_records() if record.get("game") == "Snake"]
+    finished = [record for record in records if record.get("result") == "finished"]
+    abandoned = len(records) - len(finished)
+    scores = [record["details"]["score"] for record in finished]
 
-def generate_unique_id():
-    existing_records = load_records()
-    existing_ids = {record["id"] for record in existing_records if "id" in record}
-    while True:
-        new_id = secrets.token_hex(3)
+    if len(scores) == 0:
+        best_score = None
+        average_score = None
+        longest_game = None
+    else:
+        best_score = max(scores)
+        average_score = sum(scores) / len(scores)
+        longest_game = max(record["duration"] for record in finished)
 
-        if new_id not in existing_ids:
-            return new_id
+    print("\033[2J\033[H", end="", flush=True)
+    title = " ## SNAKE OVERVIEW ## ".center(WIDTH, "-")
+    print_row(title)
 
-def save_stat(result, score, duration):
-    date = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    game_id = generate_unique_id()
-    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Snake", "result": result, "duration": duration, "details": {"score": score}}
-    log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with  open(log_path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(line) + "\n")
+    print_row(f"Games played : {len(records)}")
+    print_row(f"Finished / Abandoned : {len(finished)} / {abandoned}")
 
-def get_best_score():
-    # best score of all the finished Snake games (0 if there is none yet)
-    scores = [record["details"]["score"] for record in load_records()
-              if record.get("game") == "Snake" and record.get("result") == "finished"]
-    return max(scores, default=0)
+    if best_score is None:
+        print_row("Best score : n/a (No finished games)")
+    else:
+        print_row(f"Best score : {best_score}")
 
-def read_key():
+    if average_score is None:
+        print_row("Average score : n/a (No finished games)")
+    else:
+        print_row(f"Average score : {average_score:.2f}")
+
+    if longest_game is None:
+        print_row("Longest game : n/a (No finished games)")
+    else:
+        print_row(f"Longest game : {longest_game:.1f}s")
+    print_row("-" * WIDTH)
+
+def read_keys():
+    # returns the arrows waiting in the keyboard buffer, in order, and never blocks
+    directions = []
     while kbhit():
         key = getwch()
 
@@ -63,24 +66,64 @@ def read_key():
         elif key in ("\x00", "\xe0"):          # arrow/function key
             new_key = getwch()
             if new_key == "H":
-                return "UP"
+                directions.append("UP")
             elif new_key == "P":
-                return "DOWN"
+                directions.append("DOWN")
             elif new_key == "K":
-                return "LEFT"
+                directions.append("LEFT")
             elif new_key == "M":
-                return "RIGHT"
-            else:
-                return
-        elif key == "\r":                      # Enter
-            pass
+                directions.append("RIGHT")
+    return directions
 
-def dying(score, starting_time, best_score):
+def fill_queue(queue, direction):
+    # keeps at most 2 turns waiting, and ignores the same direction or the opposite one
+    for new_direction in read_keys():
+        if len(queue) > 0:
+            last = queue[-1]
+        else:
+            last = direction
+        if len(queue) < 2 and new_direction != last and new_direction != OPPOSITE[last]:
+            queue.append(new_direction)
+
+def place_food(snake_body):
+    # the food only appears on a free cell, None if the snake fills the whole board
+    free_cells = []
+    for row in range(ROWS):
+        for column in range(COLUMNS):
+            if [row, column] not in snake_body:
+                free_cells.append([row, column])
+    if len(free_cells) == 0:
+        return None
+    return choice(free_cells)
+
+def hits_itself(new_head, snake_body, eating):
+    # if the snake doesn't eat, its tail moves away, so the tail cell is free
+    if eating:
+        return new_head in snake_body
+    return new_head in snake_body[1:]
+
+def draw(snake_body, food, score, best_score):
+    lines = []
+    for row in range(ROWS):
+        line = ""
+        for column in range(COLUMNS):
+            if [row, column] in snake_body:
+                line += BODY
+            elif [row, column] == food:
+                line += FOOD
+            else:
+                line += EMPTY
+        lines.append(line)
+    lines.append(f"\033[48;2;40;40;42m S C O R E : {score} / P R : {max(best_score, score)} \033[0m")
+    print("\033[H" + "\n".join(lines), flush=True)
+
+def dying(score, starting_time, best_score, message="You Died"):
     ending_time = time()
     while kbhit():
         getwch()
-    save_stat("finished", score, ending_time - starting_time)
-    print(f"You Died, score : {score}")
+    save_stat("Snake", "finished", ending_time - starting_time, {"score": score})
+    print(message)
+    print(f"Score : {score}")
     if score > best_score:
         print(f"NEW HIGH SCORE ! (previous best : {best_score})")
     else:
@@ -90,128 +133,62 @@ def abandon(score, starting_time):
     ending_time = time()
     while kbhit():
         getwch()
-    save_stat("abandoned", score, ending_time - starting_time)
+    save_stat("Snake", "abandoned", ending_time - starting_time, {"score": score})
     print("Game abandoned")
 
 def play():
     starting_time = time()
-    game_map = []
+    best_score = get_best_score("Snake")       # read once, not at every tick
     score = 0
-    best_score = get_best_score()       # read once, not at every tick
 
-    # generate the game maps
-    for row in range(ROWS):
-        game_map.append([])
-        for column in range(COLUMNS):
-            game_map[row].append("\033[48;2;40;40;42m   \033[0m")
-        
+    snake_body = [[ROWS // 2, 1]]
+    food = place_food(snake_body)
+    direction = "RIGHT"
+    queue = []
 
-    # pick the snake starting cordinate
-    snake_row = 5
-    snake_column = 1
+    print("\033[2J\033[H\033[?25l", end="", flush=True)     # clear the screen and hide the cursor
+    try:
+        next_tick = monotonic() + TICK
+        while True:
+            draw(snake_body, food, score, best_score)
 
-    snake_body = []
-    snake_body.append([snake_row, snake_column])
+            # wait for the next tick, reading the keys while we wait
+            while monotonic() < next_tick:
+                fill_queue(queue, direction)
+                sleep(0.01)
+            next_tick += TICK
+            if next_tick < monotonic():        # the game froze for a moment: no burst of moves
+                next_tick = monotonic() + TICK
 
-    # pick the food cordinate
-    food_row = randint(0, ROWS - 1)
-    food_column = randint(0, COLUMNS - 1)
-    last_move = "RIGHT"
+            if len(queue) > 0:
+                direction = queue.pop(0)
+            row_change, column_change = DIRECTIONS[direction]
+            new_head = [snake_body[-1][0] + row_change, snake_body[-1][1] + column_change]
 
-    while True:
-        # if the snake in our of the borders, the game end
-        if snake_row < 0 or snake_row > ROWS - 1 or snake_column < 0 or snake_column > COLUMNS - 1:
-            dying(score, starting_time, best_score)
-            break
-        # set the snake body
-        for body_part in snake_body:
-            game_map[body_part[0]][body_part[1]] = "\033[48;2;46;204;113m   \033[0m"
-        
-        # set the food
-        game_map[food_row][food_column] = "\033[48;2;231;76;60m   \033[0m"
-        for row in range(ROWS):
-            for column in range(COLUMNS):
-                if [row, column] not in snake_body and [row, column] != [food_row, food_column]:
-                    game_map[row][column] = "\033[48;2;40;40;42m   \033[0m"
-
-        # print the game map
-        print("\033[H", end="", flush=True)
-        for row in game_map:
-            print("".join(row))
-        print(f"\033[48;2;40;40;42m S C O R E : {score} / P R : {max(best_score, score)} \033[0m")
-
-        sleep(0.15)
-        try:
-            move = read_key()
-        except KeyboardInterrupt:
-            abandon(score, starting_time)
-            break
-
-        if move is None:
-            move = last_move
-
-        if (DIRECTION_ORDER[last_move] - DIRECTION_ORDER[move]) % 4 == 2:
-            move = last_move
-
-        if move == "UP":
-            if [snake_row - 1, snake_column] in snake_body:
+            # out of the borders
+            if new_head[0] < 0 or new_head[0] > ROWS - 1 or new_head[1] < 0 or new_head[1] > COLUMNS - 1:
                 dying(score, starting_time, best_score)
                 break
-            snake_body.append([snake_row - 1, snake_column])
-            snake_row -= 1
-            if [food_row, food_column] in snake_body:
+
+            eating = new_head == food
+            if hits_itself(new_head, snake_body, eating):
+                dying(score, starting_time, best_score)
+                break
+
+            snake_body.append(new_head)
+            if eating:
                 score += 1
-                while [food_row, food_column] in snake_body:
-                    food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLUMNS - 1)
+                food = place_food(snake_body)
+                if food is None:
+                    dying(score, starting_time, best_score, "You filled the whole board !")
+                    break
             else:
                 # remove the last body part if it's not eating the food
                 snake_body.pop(0)
-        
-        elif move == "DOWN":
-            if [snake_row + 1, snake_column] in snake_body:
-                dying(score, starting_time, best_score)
-                break
-            snake_body.append([snake_row + 1, snake_column])
-            snake_row += 1
-            if [food_row, food_column] in snake_body:
-                score += 1
-                while [food_row, food_column] in snake_body:
-                    food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLUMNS - 1)
-            else:
-                snake_body.pop(0)
-        
-        elif move == "LEFT":
-            if [snake_row, snake_column - 1] in snake_body:
-                dying(score, starting_time, best_score)
-                break
-            snake_body.append([snake_row, snake_column - 1])
-            snake_column -= 1
-            if [food_row, food_column] in snake_body:
-                score += 1
-                while [food_row, food_column] in snake_body:
-                    food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLUMNS - 1)
-            else:
-                snake_body.pop(0)
-        
-        elif move == "RIGHT":
-            if [snake_row, snake_column + 1] in snake_body:
-                dying(score, starting_time, best_score)
-                break
-            snake_body.append([snake_row, snake_column + 1])
-            snake_column += 1
-            if [food_row, food_column] in snake_body:
-                score += 1
-                while [food_row, food_column] in snake_body:
-                    food_row = randint(0, ROWS - 1)
-                    food_column = randint(0, COLUMNS - 1)
-            else:
-                snake_body.pop(0)
-
-        last_move = move
-
+    except KeyboardInterrupt:
+        abandon(score, starting_time)
+    finally:
+        print("\033[?25h", end="", flush=True)       # show the cursor again
 
 if __name__ == "__main__":
     play()

@@ -1,13 +1,11 @@
 from pathlib import Path
-from random import *
+from random import randint
 from msvcrt import getwch
 from time import time
-from datetime import datetime, timezone
-import json
-import secrets
-from menu import LOG_VERSION
+from records import save_stat, get_best_win_time
 
 NAME = "Wordle"
+GAME_TYPE = "win_loss"
 
 # Create a list of accepted word
 path = Path(__file__).parent /  "wordlist_fives.txt"
@@ -69,41 +67,6 @@ def show_message(text, rows_below):
     # go down to the line under the board, write the text, come back up
     print(f"\033[{rows_below}B\r\033[2K{text}\033[{rows_below}A", end="", flush=True)
 
-def load_records():
-    log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
-    record = []
-    try:
-        with  open(log_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    record.append(json.loads(line))
-                except ValueError:
-                    continue
-    except FileNotFoundError:
-        return record
-    return record
-
-def generate_unique_id():
-    existing_records = load_records()
-    existing_ids = {record["id"] for record in existing_records if "id" in record}
-    while True:
-        new_id = secrets.token_hex(3)
-
-        if new_id not in existing_ids:
-            return new_id
-
-def save_stat(result, duration, solution, guesses_list):
-    date = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    game_id = generate_unique_id()
-    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Wordle", "result": result, "duration": duration, "details": {"solution": solution, "guesses": guesses_list}}
-    log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with  open(log_path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(line) + "\n")
-
 def read_word(rows_below, starting_time, game_solution, guesses_list):
     letters = []
     message_shown = False
@@ -116,7 +79,7 @@ def read_word(rows_below, starting_time, game_solution, guesses_list):
             message_shown = False
 
         if key == "\x03" or key == "\x1b":     # Ctrl+C and Esc
-            save_stat("abandoned", time() - starting_time, game_solution, guesses_list)
+            save_stat("Wordle", "abandoned", time() - starting_time, {"solution": game_solution, "guesses": guesses_list})
             raise KeyboardInterrupt
             
         elif key in ("\x00", "\xe0"):          # arrow/function key
@@ -159,14 +122,20 @@ def play():
 
         if is_won(score):
             ending_time = time()
-            save_stat("won", ending_time - starting_time, game_solution, guesses_list)
-            print(f"YOU WON !!! (in {turn} attempts and {ending_time - starting_time} seconds, congratulations)")
+            best_time = get_best_win_time("Wordle")
+            save_stat("Wordle", "won", ending_time - starting_time, {"solution": game_solution, "guesses": guesses_list})
+            print(f"YOU WON !!! (in {turn} attempts and {ending_time - starting_time:.1f} seconds, congratulations)")
+            if best_time is not None:
+                if ending_time - starting_time < best_time:
+                    print(f"NEW TIME RECORD ! (previous best : {best_time:.1f}s)")
+                else:
+                    print(f"Best time : {best_time:.1f}s")
             break
         elif turn == 6:
             colored_solution = ""
             for char in game_solution:
                 colored_solution += f"\033[48;2;83;141;78m\033[1;97m {char.upper()} \033[0m"
-            save_stat("lost", time() - starting_time, game_solution, guesses_list)
+            save_stat("Wordle", "lost", time() - starting_time, {"solution": game_solution, "guesses": guesses_list})
             print(f"YOU LOST !!! The word was {colored_solution}")
             break
         turn += 1

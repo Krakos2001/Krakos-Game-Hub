@@ -1,13 +1,10 @@
 import random
-from pathlib import Path
 from msvcrt import getwch
 from time import time
-from datetime import datetime, timezone
-import json
-import secrets
-from menu import LOG_VERSION
+from records import save_stat, get_best_win_time
 
 NAME = "Mastermind"
+GAME_TYPE = "win_loss"
 
 color_list = ["r", "g", "b", "y", "o", "p"]
 colors_value = {
@@ -23,42 +20,7 @@ last_line_of_board = ""
 for values in colors_value:
     last_line_of_board += f"{colors_value[values]} {values.upper()} \033[0m"
 
-def load_records():
-    log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
-    record = []
-    try:
-        with  open(log_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    record.append(json.loads(line))
-                except ValueError:
-                    continue
-    except FileNotFoundError:
-        return record
-    return record
-
-def generate_unique_id():
-    existing_records = load_records()
-    existing_ids = {record["id"] for record in existing_records if "id" in record}
-    while True:
-        new_id = secrets.token_hex(3)
-
-        if new_id not in existing_ids:
-            return new_id
-
-def save_stat(result, duration, solution, guesses_list):
-    date = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    game_id = generate_unique_id()
-    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Mastermind", "result": result, "duration": duration, "details": {"solution": "".join(solution), "guesses": guesses_list}}
-    log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with  open(log_path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(line) + "\n")
-
-def create_code(restricted=None):
+def create_code():
     return random.choices(color_list, k=4)
 
 def score(key, guess):
@@ -92,7 +54,7 @@ def read_combination(rows_below, starting_time, game_solution, guesses_list):
             message_shown = False
 
         if key == "\x03" or key == "\x1b":     # Ctrl+C and Esc
-            save_stat("abandoned", time() - starting_time, game_solution, guesses_list)
+            save_stat("Mastermind", "abandoned", time() - starting_time, {"solution": "".join(game_solution), "guesses": guesses_list})
             raise KeyboardInterrupt
         elif key in ("\x00", "\xe0"):          # arrow/function key
             getwch()
@@ -138,14 +100,20 @@ def play():
 
         if list(game_guess) == key:
             ending_time = time()
-            save_stat("won", ending_time - starting_time, key, guesses_list)
-            print(f"YOU WON !!! (in {turn} attempts and {ending_time - starting_time} seconds, congratulations)")
+            best_time = get_best_win_time("Mastermind")
+            save_stat("Mastermind", "won", ending_time - starting_time, {"solution": "".join(key), "guesses": guesses_list})
+            print(f"YOU WON !!! (in {turn} attempts and {ending_time - starting_time:.1f} seconds, congratulations)")
+            if best_time is not None:
+                if ending_time - starting_time < best_time:
+                    print(f"NEW TIME RECORD ! (previous best : {best_time:.1f}s)")
+                else:
+                    print(f"Best time : {best_time:.1f}s")
             break
         elif turn == 10:
             colored_solution = ""
             for char in key:
                 colored_solution += f"{colors_value[char]} {char.upper()} \033[0m"
-            save_stat("lost", time() - starting_time, key, guesses_list)
+            save_stat("Mastermind", "lost", time() - starting_time, {"solution": "".join(key), "guesses": guesses_list})
             print(f"YOU LOST !!! The code was {colored_solution}")
             break
         turn += 1

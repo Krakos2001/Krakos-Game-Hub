@@ -1,24 +1,5 @@
-
-import json
-from pathlib import Path
 from menu import WIDTH, run_menu, print_row, read_key
-
-def load_records():
-    log_path = Path(__file__).parent / "games" /  "logs" / "game_logs.jsonl"
-    record = []
-    try:
-        with  open(log_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    record.append(json.loads(line))
-                except ValueError:
-                    continue
-    except FileNotFoundError:
-        return record
-    return record
+from records import load_records
 
 def filter_records(records, filters, filter_category):
     matches = [record for record in records if record.get(filter_category) == filters]
@@ -63,16 +44,34 @@ def compute_stat(records, game=None):
 
     return {"games_played": games_played, "won": won, "lost": lost, "abandoned": abandoned, "win_rate": win_rate, "abandon_rate": abandon_rate, "avg_attempts_per_win": avg_attempts_per_win, "fastest_win": fastest_win, "fastest_win_time": fastest_win_time}
 
-def show_stats(game=None):
+def show_stats(game=None, win_loss_games=None):
     records = load_records()
+    all_records = records
+    if game is None and win_loss_games is not None:
+        # the global win stats only count the games that have a win or a loss
+        records = [record for record in records if record.get("game") in win_loss_games]
     stats = compute_stat(records, game)
-    if game is None:
+    is_global = game is None
+    if is_global:
         game = "Global"
 
     print("\033[2J\033[H", end="", flush=True) 
     title = f" ## {game.upper()} OVERVIEW ## ".center(WIDTH, "-")
     print_row(title)
-    
+
+    if is_global:
+        games_count = {}
+        for record in all_records:
+            name = record.get("game")
+            games_count[name] = games_count.get(name, 0) + 1
+        print_row(f"Total games played : {len(all_records)}")
+        if len(games_count) == 0:
+            print_row("Most played game : n/a (No played games)")
+        else:
+            most_played = max(games_count, key=games_count.get)
+            print_row(f"Most played game : {most_played} ({games_count[most_played]})")
+        print_row("Win / Loss games only :")
+
     print_row(f"Games played : {stats["games_played"]}")
     print_row(f"Won / Lost / Abandoned : {stats["won"]} / {stats["lost"]} / {stats["abandoned"]}")
     
@@ -100,8 +99,11 @@ def show_stats(game=None):
 
 def stats_menu(loaded_games):
     options = ["Global"]
+    win_loss_games = []
     for game in loaded_games:
         options.append(game.NAME)
+        if getattr(game, "GAME_TYPE", "win_loss") == "win_loss":
+            win_loss_games.append(game.NAME)
     options.append("BACK")
 
     last_position = 0
@@ -111,13 +113,14 @@ def stats_menu(loaded_games):
         if choice is None:
             return
         last_position = choice
-        if choice == 0:
-            name = None
-        else:
-            name = loaded_games[choice - 1].NAME
         print("\033[2J\033[H", end="", flush=True)
         try:
-            show_stats(name)
+            if choice == 0:
+                show_stats(None, win_loss_games)
+            elif hasattr(loaded_games[choice - 1], "show_stats"):
+                loaded_games[choice - 1].show_stats()
+            else:
+                show_stats(loaded_games[choice - 1].NAME)
             print("Press any key to return to the menu")
             read_key()
         except KeyboardInterrupt:

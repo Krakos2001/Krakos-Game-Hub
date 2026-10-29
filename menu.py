@@ -5,7 +5,6 @@ WIDTH = 49
 RESET = "\033[0m"
 NORMAL = "\033[48;2;58;58;60m\033[1;97m"                 # dark gray, white bold text
 HIGHLIGHT = "\033[48;2;200;200;200m\033[1m\033[38;2;30;30;30m"  # light gray, dark bold text
-LOG_VERSION = 1
 
 def print_row(text, color=NORMAL):
     print(f"{color}{text:<{WIDTH}}{RESET}")
