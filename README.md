@@ -20,7 +20,7 @@ A in-terminal hub for mini-games. Play games from a selection of homemade copies
 - **No UI**: My majestic graphics are made with ANSI escape codes, no external libraries.
 - **Interact with the terminal**, isn't played with consecutive lines, but the program actually deletes/modify lines to simulate a UI.
 - **Automatic game discovery**: more of a coding ease than an user feature, but adding game is made easy: drop a new game in the `games/` folder and it shows up in the menu by itself (see **Adding a game** for more info).
-- **Game tracking and achievements**: WIP but every win, loss or even abandoned game is tracked to give the most precise stats you could imagine (yes I'm a nerd, how could you tell).
+- **Game tracking and achievements**: Every win, loss or even abandoned game is tracked to give the most precise stats you could imagine (yes I'm a nerd, how could you tell).
 
 ## Requirements
 
@@ -89,6 +89,15 @@ You have 10 attemps. After each attempts:
 - The number in the **Red** box on the right correspond to the number of colors that were at their exact positions
 - The number in the **White** box on the right correspond to the number of colors that are in the key (excluding one counted in the **Red** box) but weren't in their right positions.
 
+### In Snake
+
+| Key | Action |
+|---|---|
+| Arrow keys | Move the snake |
+| Ctrl+C | Leave the game and go back to the hub |
+
+You must eat as many apple (Red squares) as possible to increase your score. Hitting your own body or the walls with you head will result in losing the game.
+
 ## Project structure
 
 ```
@@ -113,7 +122,7 @@ Krakos-Game-Hub/
 Every game is a Python file in `games/` that has three things:
 
 1. a variable `NAME`, the text shown in the menu
-2. a variable `GAME_TYPE`: `"win_loss"` if the game ends with a win or a loss, `"score"` if it ends with a score
+2. a variable `GAME_TYPE`: `"win_loss"` if the game ends with a win or a loss (Wordle for exaple), `"score"` if it ends with a score (Snake for example)
 3. a function `play()`, which the hub calls when the player picks the game
 
 ```python
@@ -140,7 +149,7 @@ Restart the hub and "My Game" appears in the menu. If your game needs data files
 
 ## Status and ideas
 
-Working now: better logging of games, achievements, stats display
+Working now: Achievement, tho this project is paused as I'm working on something else
 
 Ideas for later:
 
