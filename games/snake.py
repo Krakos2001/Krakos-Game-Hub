@@ -1,14 +1,15 @@
 from random import *
-from msvcrt import getwch
-from time import time
+from msvcrt import getwch, kbhit
+from time import time, sleep
 from datetime import datetime, timezone
 from pathlib import Path
 import json
 import secrets
 from menu import LOG_VERSION
 
-ROWS = 10
+ROWS = 10  
 COLUMNS = 10
+DIRECTION_ORDER = {"UP":1, "RIGHT":2, "DOWN":3, "LEFT":4}
 
 NAME = "Snake"
 
@@ -48,7 +49,7 @@ def save_stat(result, duration, solution, guesses_list):
         f.write(json.dumps(line) + "\n")
 
 def read_key(starting_time, points):
-    while True:
+    while kbhit():
         key = getwch()
 
         if key == "\x03" or key == "\x1b":     # Ctrl+C and Esc
@@ -89,6 +90,7 @@ def play():
     # pick the food cordinate
     food_row = randint(0, ROWS - 1)
     food_column = randint(0, COLUMNS - 1)
+    last_move = "RIGHT"
 
     while True:
         # if the snake in our of the borders, the game end
@@ -107,12 +109,22 @@ def play():
                     game_map[row][column] = "\033[48;2;40;40;42m   \033[0m"
 
         # print the game map
-        print("\033[2J\033[H", end="", flush=True)
+        print("\033[H", end="", flush=True)
         for row in game_map:
             print("".join(row))
         print("\n")
-        
+
+        sleep(0.15)
         move = read_key(starting_time, 0)
+
+        
+
+        if move == None:
+            move = last_move
+
+        if (DIRECTION_ORDER[last_move] - DIRECTION_ORDER[move]) % 4 in [2, 4]:
+            move = last_move
+
         if move == "UP":
             if [snake_row - 1, snake_column] in snake_body:
                 print("You died!")
@@ -165,6 +177,8 @@ def play():
                     food_column = randint(0, COLUMNS - 1)
             else:
                 snake_body.pop(0)
+
+        last_move = move
 
 
 if __name__ == "__main__":
