@@ -9,11 +9,29 @@ A in-terminal hub for mini-games. Play games from a selection of homemade copies
 ### Hub menu
 ![Hub menu](images/menu.png)
 
+### Mastermind board
+![Mastermind board](images/mastermind.png)
+
+### Snake board
+![Snake board](images/snake.png)
+
 ### Wordle board
 ![Wordle board](images/wordle.png)
 
-### Mastermind board
-![Mastermind board](images/mastermind.png)
+## Statistics menus
+![Statistics menu](images/stats.png)
+
+### Global Statistics:
+![Global Statistics](images/stats_global.png)
+
+### Mastermind Statistics:
+![Mastermind Statistics](images/stats_mastermind.png)
+
+### Snake Statistics:
+![Snake Statistics](images/stats_snake.png)
+
+### Wordle Statistics:
+![Wordle Statistics](images/stats_wordle.png)
 
 ## Features
 
