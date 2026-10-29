@@ -39,10 +39,10 @@ def generate_unique_id():
         if new_id not in existing_ids:
             return new_id
 
-def save_stat(result, duration, solution, guesses_list):
+def save_stat(score, duration):
     date = datetime.now(timezone.utc).isoformat(timespec="seconds")
     game_id = generate_unique_id()
-    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Mastermind", "result": result, "duration": duration, "details": {"solution": "".join(solution), "guesses": guesses_list}}
+    line = {"id": game_id, "v": LOG_VERSION, "date": date, "game": "Snake", "result": "Non-Binary GameMode", "duration": duration, "details": {"score": score}}
     log_path = Path(__file__).parent /  "logs" / "game_logs.jsonl"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with  open(log_path, "a", encoding="utf-8") as f:
@@ -70,9 +70,18 @@ def read_key(starting_time, points):
         elif key == "\r":                      # Enter
             pass
 
+def dying(score, starting_time):
+    ending_time = time()
+    while kbhit():
+        getwch()
+    save_stat(score, ending_time - starting_time)
+    print("You Died")
+    
+
 def play():
     starting_time = time()
     game_map = []
+    score = 0
 
     # generate the game maps
     for row in range(ROWS):
@@ -81,8 +90,8 @@ def play():
             game_map[row].append("\033[48;2;40;40;42m   \033[0m")
 
     # pick the snake starting cordinate
-    snake_row = randint(0, ROWS - 1)
-    snake_column = randint(0, COLUMNS - 1)
+    snake_row = 5
+    snake_column = 1
 
     snake_body = []
     snake_body.append([snake_row, snake_column])
@@ -95,7 +104,7 @@ def play():
     while True:
         # if the snake in our of the borders, the game end
         if snake_row < 0 or snake_row > ROWS - 1 or snake_column < 0 or snake_column > COLUMNS - 1:
-            print("You lose!, since you can't teleport trough the walls")
+            dying(score, starting_time)
             break
         # set the snake body
         for body_part in snake_body:
@@ -120,16 +129,17 @@ def play():
         if move is None:
             move = last_move
 
-        if (DIRECTION_ORDER[last_move] - DIRECTION_ORDER[move]) % 4 in [2, 4]:
+        if (DIRECTION_ORDER[last_move] - DIRECTION_ORDER[move]) % 4 == 2:
             move = last_move
 
         if move == "UP":
             if [snake_row - 1, snake_column] in snake_body:
-                print("You died!")
+                dying(score, starting_time)
                 break
             snake_body.append([snake_row - 1, snake_column])
             snake_row -= 1
             if [food_row, food_column] in snake_body:
+                score += 1
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
                     food_column = randint(0, COLUMNS - 1)
@@ -139,11 +149,12 @@ def play():
         
         elif move == "DOWN":
             if [snake_row + 1, snake_column] in snake_body:
-                print("You died!")
+                dying(score, starting_time)
                 break
             snake_body.append([snake_row + 1, snake_column])
             snake_row += 1
             if [food_row, food_column] in snake_body:
+                score += 1
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
                     food_column = randint(0, COLUMNS - 1)
@@ -152,11 +163,12 @@ def play():
         
         elif move == "LEFT":
             if [snake_row, snake_column - 1] in snake_body:
-                print("You died!")
+                dying(score, starting_time)
                 break
             snake_body.append([snake_row, snake_column - 1])
             snake_column -= 1
             if [food_row, food_column] in snake_body:
+                score += 1
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
                     food_column = randint(0, COLUMNS - 1)
@@ -165,11 +177,12 @@ def play():
         
         elif move == "RIGHT":
             if [snake_row, snake_column + 1] in snake_body:
-                print("You died!")
+                dying(score, starting_time)
                 break
             snake_body.append([snake_row, snake_column + 1])
             snake_column += 1
             if [food_row, food_column] in snake_body:
+                score += 1
                 while [food_row, food_column] in snake_body:
                     food_row = randint(0, ROWS - 1)
                     food_column = randint(0, COLUMNS - 1)
