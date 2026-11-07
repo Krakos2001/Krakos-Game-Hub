@@ -5,7 +5,20 @@ from records import save_stat, get_best_win_time
 
 NAME = "Mastermind"
 GAME_TYPE = "win_loss"
+DESCRIPTION = """
+Crack the secret 4-color combination in 10 attempts!
 
+There are 6 possible colors, and colors can be repeated.
+After each guess, you receive feedback:
+  Red   - Correct color and position.
+  White - Correct color, wrong position.
+
+CONTROLS:
+  R / G / B / Y / O / P - Select a color
+  Backspace               - Remove a color
+  Enter                   - Submit your guess
+  Esc                     - Return to the hub
+"""
 color_list = ["r", "g", "b", "y", "o", "p"]
 colors_value = {
     "r": "\033[48;2;231;76;60m\033[1;97m",

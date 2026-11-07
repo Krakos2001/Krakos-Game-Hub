@@ -6,6 +6,20 @@ from records import save_stat, get_best_win_time
 
 NAME = "Wordle"
 GAME_TYPE = "win_loss"
+DESCRIPTION = """
+Guess the hidden 5-letter word in 6 attempts.
+
+After each guess, letters change color:
+  Green  - Correct letter and position.
+  Yellow - Correct letter, wrong position.
+  Gray   - Letter is not in the word.
+
+CONTROLS:
+  Type letters - Enter your guess
+  Backspace    - Remove a letter
+  Enter        - Submit your guess
+  Esc          - Return to the hub
+"""
 
 # Create a list of accepted word
 path = Path(__file__).parent /  "wordlist_fives.txt"

@@ -29,7 +29,10 @@ def main():
             stats_menu(load_games())
 
         else:
-            game = loaded_games[choice]
+            print("\033[2J\033[H", end="", flush=True)
+            print(game.DESCRIPTION)
+            print("\nPress any key to start...")
+            read_key()
             print("\033[2J\033[H", end="", flush=True)
             try:
                 game.play()

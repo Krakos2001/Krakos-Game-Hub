@@ -16,6 +16,16 @@ FOOD = "\033[48;2;231;76;60m   \033[0m"
 
 NAME = "Snake"
 GAME_TYPE = "score"
+DESCRIPTION = """
+Eat apples to grow longer and increase your score!
+
+Avoid hitting the walls or running into your own body.
+The longer you survive, the higher your score!
+
+CONTROLS:
+  Arrow keys - Change direction
+  Esc        - Return to the hub
+"""
 
 def show_stats():
     records = [record for record in load_records() if record.get("game") == "Snake"]
