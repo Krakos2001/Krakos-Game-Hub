@@ -137,7 +137,7 @@ Krakos-Game-Hub/
 
 Every game is a Python file in `games/` that has three things:
 
-1. a variable `NAME`, the text shown in the menu
+1. a `NAME` variable
 2. a variable `GAME_TYPE`: `"win_loss"` if the game ends with a win or a loss (Wordle for exaple), `"score"` if it ends with a score (Snake for example)
 3. a function `play()`, which the hub calls when the player picks the game
 
@@ -153,7 +153,7 @@ def play():
     save_stat(NAME, "won", duration, {"solution": ...})
 ```
 
-`save_stat` (from `records.py`) writes the game in the logs, so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"` or `"abandoned"` with its score in the details, and can have its own stats page by defining a function `show_stats()`.
+`save_stat` (imported from `records.py`) writes the game in the logs (in a .jsonl), so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"`, `"lost"` or `"abandoned"` with its score in the details, and can have its own stats page by defining a function `show_stats()`.
 
 Restart the hub and "My Game" appears in the menu. If your game needs data files, put them in `games/` and build their paths with `Path(__file__).parent`, so they are found wherever the hub is launched from.
 
@@ -161,14 +161,14 @@ Restart the hub and "My Game" appears in the menu. If your game needs data files
 
 - Wordle allowed guesses list (`wordlist_fives.txt`) and possible answers (`wordle.txt`) are from [John Burkardt's word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/)
 - Wordle is a game created by Josh Wardle and owned by the New York Times, accessible [here](https://www.nytimes.com/games/wordle/index.html)
-- Built as part of [Hack Club](https://hackclub.com)'s Pixl.
+- Made for [Hack Club](https://hackclub.com)'s Pixl.
 
-## Status and ideas
+## Development status
 
 Working now: Achievement, tho this project is paused as I'm working on something else and Pixl is shutting down
 
-Ideas for later:
+Idea for later:
 
-- More mini-games
-- Cross-platform key reading (Mac and Linux)
+- Add more minigames
+- Key reading for other OS (Mac and Linux)
 - A multiplayer, and maybe an Online mode
