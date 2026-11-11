@@ -62,8 +62,6 @@ cd Krakos-Game-Hub
 python main.py
 ```
 
-Run it from the project folder, so Python can find the `games` package.
-
 ## Controls
 
 ### In the hub
@@ -76,7 +74,7 @@ Run it from the project folder, so Python can find the `games` package.
 | Enter | Launch the selected game (or quit) |
 | Esc / Ctrl+C | Quit the hub |
 
-On a French AZERTY keyboard, the top row keys (`&`, `é`, `"`, `'`, `(`, `-`, `è`, `_`, `ç`) work as `1` to `9` without pressing Shift.
+On a French AZERTY keyboard (as I'm French), the top row keys (`&`, `é`, `"`, `'`, `(`, `-`, `è`, `_`, `ç`) work as `1` to `9` without pressing Shift.
 
 ### In Wordle
 
@@ -114,7 +112,7 @@ You have 10 attemps. After each attempts:
 | Arrow keys | Move the snake |
 | Ctrl+C | Leave the game and go back to the hub |
 
-You must eat as many apple (Red squares) as possible to increase your score. Hitting your own body or the walls with you head will result in losing the game.
+Eat as many apples (red squares) to accumulate points and beat your PB but be careful of walls or your own body.
 
 ## Project structure
 
@@ -161,13 +159,13 @@ Restart the hub and "My Game" appears in the menu. If your game needs data files
 
 ## Credits and data
 
-- The word lists come from [John Burkardt's word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/): `wordlist_fives.txt` for the accepted guesses and `wordle.txt` for the solutions. Check the terms on that page before reusing them.
-- Wordle is a game created by Josh Wardle and now owned by The New York Times. This project is a fan-made imitation and is not affiliated with or endorsed by the NYT.
+- Wordle allowed guesses list (`wordlist_fives.txt`) and possible answers (`wordle.txt`) are from [John Burkardt's word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/)
+- Wordle is a game created by John Wardle and owned by the New York Times, accessible [here](https://www.nytimes.com/games/wordle/index.html)
 - Built as part of [Hack Club](https://hackclub.com)'s Pixl.
 
 ## Status and ideas
 
-Working now: Achievement, tho this project is paused as I'm working on something else
+Working now: Achievement, tho this project is paused as I'm working on something else and Pixl is shutting down
 
 Ideas for later:
 
