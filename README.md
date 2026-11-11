@@ -2,7 +2,7 @@
 
 # Description
 
-A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved and are tracked with achievements. Made mostly in Python
+A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved so you can check your stats. Made mostly in Python
 
 > Made for [Pixl](https://pixl.hackclub.com/refers?code=9B6LZH) by Hack Club.
 
@@ -36,7 +36,7 @@ A in-terminal hub for mini-games. Play games from a selection of homemade copies
 ## Features
 
 - **No UI**: My majestic graphics are made with ANSI escape codes, no external libraries.
-- **Interact with the terminal**, isn't played with consecutive lines, but the program actually deletes/modify lines to simulate a UI.
+- **Interact with the terminal**, instead of printing new lines all the time, the program modifies the terminal to simulate a UI.
 - **Automatic game discovery**: more of a coding ease than an user feature, but adding game is made easy: drop a new game in the `games/` folder and it shows up in the menu by itself (see **Adding a game** for more info).
 - **Game tracking and achievements**: Every win, loss or even abandoned game is tracked to give the most precise stats you could imagine (yes I'm a nerd, how could you tell).
 
@@ -44,7 +44,7 @@ A in-terminal hub for mini-games. Play games from a selection of homemade copies
 
 - **Windows only** for now as key presses are read with the `msvcrt` module, might integrate Linux and Mac in future version.
 - Python 3.13 (the version it was tested with).
-- Runs directly in the IDE, so any code editor is fine.
+- It runs directly in your IDE or terminal.
 - Make the terminal window tall enough to show the different menus and screens (about 12 lines is safe).
 - Perfomance wise, its really not an issue lol, here are my specs:
     * **RAM** : 4GB @ 1867MHz
@@ -160,7 +160,7 @@ Restart the hub and "My Game" appears in the menu. If your game needs data files
 ## Credits and data
 
 - Wordle allowed guesses list (`wordlist_fives.txt`) and possible answers (`wordle.txt`) are from [John Burkardt's word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/)
-- Wordle is a game created by John Wardle and owned by the New York Times, accessible [here](https://www.nytimes.com/games/wordle/index.html)
+- Wordle is a game created by Josh Wardle and owned by the New York Times, accessible [here](https://www.nytimes.com/games/wordle/index.html)
 - Built as part of [Hack Club](https://hackclub.com)'s Pixl.
 
 ## Status and ideas
