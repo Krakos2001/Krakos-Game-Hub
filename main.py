@@ -14,7 +14,7 @@ def main():
     loaded_games = load_games()
     options = []
     for game in loaded_games:
-        options.append(game.NAME)
+        options.append(getattr(game, "NAME", game.__name__))
     options.append("Stats")
     options.append("QUIT")
 
@@ -26,16 +26,19 @@ def main():
             return
         last_position = choice
         if choice == len(loaded_games):
-            stats_menu(load_games())
+            stats_menu(loaded_games)
 
         else:
             print("\033[2J\033[H", end="", flush=True)
-            print(game.DESCRIPTION)
+            print(getattr(loaded_games[choice], "DESCRIPTION", "No description available."))
             print("\nPress any key to start...")
             read_key()
             print("\033[2J\033[H", end="", flush=True)
             try:
-                game.play()
+                if hasattr(loaded_games[choice], "play"):
+                    loaded_games[choice].play()
+                else:
+                    print("This game does not have a 'play' function.")
                 print("Press any key to return to the menu")
                 read_key()
             except KeyboardInterrupt:
