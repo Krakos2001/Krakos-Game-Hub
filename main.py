@@ -1,16 +1,24 @@
 import importlib
 import pkgutil
+import sys
 import games
 from menu import run_menu, read_key, WIDTH
 from stats import stats_menu
 
 def load_games():
+    if getattr(sys, "frozen", False):
+        return [
+            importlib.import_module(f"games.{name}")
+            for name in ("mastermind", "snake", "wordle")
+        ]
+
     loaded_games = []
     for item in pkgutil.iter_modules(games.__path__):
         loaded_games.append(importlib.import_module(f"games.{item.name}"))
     return loaded_games
 
 def main():
+    print("\033[2J\033[H", end="", flush=True)
     loaded_games = load_games()
     options = []
     for game in loaded_games:

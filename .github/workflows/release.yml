@@ -1,0 +1,40 @@
+name: Build Windows executable
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install PyInstaller
+        run: python -m pip install --upgrade pyinstaller
+
+      - name: Build executable
+        run: >-
+          pyinstaller --clean --noconfirm --onefile --console
+          --name Krakos-Game-Hub
+          --hidden-import games.mastermind
+          --hidden-import games.snake
+          --hidden-import games.wordle
+          --add-data "games/wordle.txt;games"
+          --add-data "games/wordlist_fives.txt;games"
+          main.py
+
+      - name: Attach executable to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Krakos-Game-Hub.exe
+          fail_on_unmatched_files: true

@@ -62,6 +62,10 @@ cd Krakos-Game-Hub
 python main.py
 ```
 
+For Windows, download `Krakos-Game-Hub.exe` from the Assets section of a
+GitHub release and run it from a terminal. The executable stores game stats in
+`%LOCALAPPDATA%\Krakos Game Hub\game_logs.jsonl`.
+
 ## Controls
 
 ### In the hub
@@ -156,6 +160,10 @@ def play():
 `save_stat` (imported from `records.py`) writes the game in the logs (in a .jsonl), so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"`, `"lost"` or `"abandoned"` with its score in the details, and can have its own stats page by defining a function `show_stats()`.
 
 Restart the hub and "My Game" appears in the menu. If your game needs data files, put them in `games/` and build their paths with `Path(__file__).parent`, so they are found wherever the hub is launched from.
+
+This automatic discovery applies when running from source. To include a new game
+in the Windows executable, also add it to the frozen game list in `main.py` and
+its hidden imports and data files to `.github/workflows/release.yml`.
 
 ## Credits and data
 

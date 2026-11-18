@@ -1,10 +1,18 @@
 import json
+import os
 import secrets
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 LOG_VERSION = 1
-LOG_PATH = Path(__file__).parent / "games" / "logs" / "game_logs.jsonl"
+if getattr(sys, "frozen", False):
+    local_app_data = os.environ.get(
+        "LOCALAPPDATA", str(Path.home() / "AppData" / "Local")
+    )
+    LOG_PATH = Path(local_app_data) / "Krakos Game Hub" / "game_logs.jsonl"
+else:
+    LOG_PATH = Path(__file__).parent / "games" / "logs" / "game_logs.jsonl"
 
 def load_records():
     record = []
