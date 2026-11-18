@@ -2,7 +2,7 @@
 
 # Description
 
-A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved and are tracked with achievements. Made mostly in Python
+A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved so you can check your stats. Made mostly in Python
 
 > Made for [Pixl](https://pixl.hackclub.com/refers?code=9B6LZH) by Hack Club.
 
@@ -36,7 +36,7 @@ A in-terminal hub for mini-games. Play games from a selection of homemade copies
 ## Features
 
 - **No UI**: My majestic graphics are made with ANSI escape codes, no external libraries.
-- **Interact with the terminal**, isn't played with consecutive lines, but the program actually deletes/modify lines to simulate a UI.
+- **Interact with the terminal**, instead of printing new lines all the time, the program modifies the terminal to simulate a UI.
 - **Automatic game discovery**: more of a coding ease than an user feature, but adding game is made easy: drop a new game in the `games/` folder and it shows up in the menu by itself (see **Adding a game** for more info).
 - **Game tracking and achievements**: Every win, loss or even abandoned game is tracked to give the most precise stats you could imagine (yes I'm a nerd, how could you tell).
 
@@ -44,7 +44,7 @@ A in-terminal hub for mini-games. Play games from a selection of homemade copies
 
 - **Windows only** for now as key presses are read with the `msvcrt` module, might integrate Linux and Mac in future version.
 - Python 3.13 (the version it was tested with).
-- Runs directly in the IDE, so any code editor is fine.
+- It runs directly in your IDE or terminal.
 - Make the terminal window tall enough to show the different menus and screens (about 12 lines is safe).
 - Perfomance wise, its really not an issue lol, here are my specs:
     * **RAM** : 4GB @ 1867MHz
@@ -62,8 +62,6 @@ cd Krakos-Game-Hub
 python main.py
 ```
 
-Run it from the project folder, so Python can find the `games` package.
-
 ## Controls
 
 ### In the hub
@@ -76,7 +74,7 @@ Run it from the project folder, so Python can find the `games` package.
 | Enter | Launch the selected game (or quit) |
 | Esc / Ctrl+C | Quit the hub |
 
-On a French AZERTY keyboard, the top row keys (`&`, `é`, `"`, `'`, `(`, `-`, `è`, `_`, `ç`) work as `1` to `9` without pressing Shift.
+On a French AZERTY keyboard (as I'm French), the top row keys (`&`, `é`, `"`, `'`, `(`, `-`, `è`, `_`, `ç`) work as `1` to `9` without pressing Shift.
 
 ### In Wordle
 
@@ -114,7 +112,7 @@ You have 10 attemps. After each attempts:
 | Arrow keys | Move the snake |
 | Ctrl+C | Leave the game and go back to the hub |
 
-You must eat as many apple (Red squares) as possible to increase your score. Hitting your own body or the walls with you head will result in losing the game.
+Eat as many apples (red squares) to accumulate points and beat your PB but be careful of walls or your own body.
 
 ## Project structure
 
@@ -139,7 +137,7 @@ Krakos-Game-Hub/
 
 Every game is a Python file in `games/` that has three things:
 
-1. a variable `NAME`, the text shown in the menu
+1. a `NAME` variable
 2. a variable `GAME_TYPE`: `"win_loss"` if the game ends with a win or a loss (Wordle for exaple), `"score"` if it ends with a score (Snake for example)
 3. a function `play()`, which the hub calls when the player picks the game
 
@@ -155,22 +153,22 @@ def play():
     save_stat(NAME, "won", duration, {"solution": ...})
 ```
 
-`save_stat` (from `records.py`) writes the game in the logs, so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"` or `"abandoned"` with its score in the details, and can have its own stats page by defining a function `show_stats()`.
+`save_stat` (imported from `records.py`) writes the game in the logs (in a .jsonl), so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"`, `"lost"` or `"abandoned"` with its score in the details, and can have its own stats page by defining a function `show_stats()`.
 
 Restart the hub and "My Game" appears in the menu. If your game needs data files, put them in `games/` and build their paths with `Path(__file__).parent`, so they are found wherever the hub is launched from.
 
 ## Credits and data
 
-- The word lists come from [John Burkardt's word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/): `wordlist_fives.txt` for the accepted guesses and `wordle.txt` for the solutions. Check the terms on that page before reusing them.
-- Wordle is a game created by Josh Wardle and now owned by The New York Times. This project is a fan-made imitation and is not affiliated with or endorsed by the NYT.
-- Built as part of [Hack Club](https://hackclub.com)'s Pixl.
+- Wordle allowed guesses list (`wordlist_fives.txt`) and possible answers (`wordle.txt`) are from [John Burkardt's word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/)
+- Wordle is a game created by Josh Wardle and owned by the New York Times, accessible [here](https://www.nytimes.com/games/wordle/index.html)
+- Made for [Hack Club](https://hackclub.com)'s Pixl.
 
-## Status and ideas
+## Development status
 
-Working now: Achievement, tho this project is paused as I'm working on something else
+Working now: Achievement, tho this project is paused as I'm working on something else and Pixl is shutting down
 
-Ideas for later:
+Idea for later:
 
-- More mini-games
-- Cross-platform key reading (Mac and Linux)
+- Add more minigames
+- Key reading for other OS (Mac and Linux)
 - A multiplayer, and maybe an Online mode
