@@ -2,68 +2,94 @@
 
 # Description
 
-A in-terminal hub for mini-games. Play games from a selection of homemade copies of the greatest web games. Your attemps are saved so you can check your stats. Made mostly in Python
+A in-terminal hub for mini-games. Play games from a selection of copies of the greatest web games. Your attempts are saved so you can check your stats. Made mostly in Python
 
 > Made for [Pixl](https://pixl.hackclub.com/refers?code=9B6LZH) by Hack Club.
 
 ### Hub menu
+
 ![Hub menu](images/menu.png)
 
 ### Mastermind board
+
 ![Mastermind board](images/mastermind.png)
 
 ### Snake board
+
 ![Snake board](images/snake.png)
 
 ### Wordle board
+
 ![Wordle board](images/wordle.png)
 
 ## Statistics menus
+
 ![Statistics menu](images/stats.png)
 
 ### Global Statistics:
+
 ![Global Statistics](images/stats_global.png)
 
 ### Mastermind Statistics:
+
 ![Mastermind Statistics](images/stats_mastermind.png)
 
 ### Snake Statistics:
+
 ![Snake Statistics](images/stats_snake.png)
 
 ### Wordle Statistics:
+
 ![Wordle Statistics](images/stats_wordle.png)
 
 ## Features
 
-- **No UI**: My majestic graphics are made with ANSI escape codes, no external libraries.
-- **Interact with the terminal**, instead of printing new lines all the time, the program modifies the terminal to simulate a UI.
-- **Automatic game discovery**: more of a coding ease than an user feature, but adding game is made easy: drop a new game in the `games/` folder and it shows up in the menu by itself (see **Adding a game** for more info).
-- **Game tracking and achievements**: Every win, loss or even abandoned game is tracked to give the most precise stats you could imagine (yes I'm a nerd, how could you tell).
+- **No UI**: My majestic graphics are made with ANSI escape codes, no libraries.
+
+- **Interact with the terminal**, of printing new lines all the time the program modifies the terminal to simulate a UI.
+
+- **Automatic game discovery**: more of a coding ease than an user feature but adding game is made easy: drop a game in the `games/` folder and it shows up in the menu by itself (see **Adding a game** for info).
+
+- **Game. Achievements**: Every win, loss or abandoned game is tracked to give the most precise stats you could imagine (yes I'm a nerd how could you tell).
 
 ## Requirements
 
-- **Windows only** for now as key presses are read with the `msvcrt` module, might integrate Linux and Mac in future version.
+- **Windows ** for now as key presses are read with the `msvcrt` module might integrate Linux and Mac in future version.
+
 - Python 3.13 (the version it was tested with).
+
 - It runs directly in your IDE or terminal.
-- Make the terminal window tall enough to show the different menus and screens (about 12 lines is safe).
-- Perfomance wise, its really not an issue lol, here are my specs:
-    * **RAM** : 4GB @ 1867MHz
-    * **SSD** : 120GB but about 2Mo is fine
-    * **CPU** : Intel(R) Core(TM) m3-8100Y CPU @ 1.10GHz (1.61 GHz)
-    * **GPU** : iGPU with 128MB **VRAM**
+
+- Make the terminal window tall enough to show the menus and screens (about 12 lines is safe).
+
+- Performance wise, its not an issue lol here are my specs:
+
+* **RAM** : 4GB @ 1867MHz
+
+* **SSD** : 120GB but about 2Mo is fine
+
+* **CPU** : Intel(R) Core(TM) m3-8100Y CPU @ 1.10GHz (1.61 GHz)
+
+* **GPU** : iGPU with 128MB **VRAM**
 
 ## How to run
 
-Download the code and run main.py, or use the following commands:
+Download the code and run main.py or use the following commands:
 
 ```
+
 git clone https://github.com/Krakos2001/Krakos-Game-Hub.git
+
 cd Krakos-Game-Hub
+
 python main.py
+
 ```
 
-For Windows, download `Krakos-Game-Hub.exe` from the Assets section of a
+For Windows download `Krakos-Game-Hub.exe` from the Assets section of a
+
 GitHub release and run it from a terminal. The executable stores game stats in
+
 `%LOCALAPPDATA%\Krakos Game Hub\game_logs.jsonl`.
 
 ## Controls
@@ -76,51 +102,55 @@ GitHub release and run it from a terminal. The executable stores game stats in
 | `1`-`9` | Jump to that game |
 | `0` | Jump to QUIT |
 | Enter | Launch the selected game (or quit) |
-| Esc / Ctrl+C | Quit the hub |
+Esc / Ctrl+C | Quit the hub |
 
-On a French AZERTY keyboard (as I'm French), the top row keys (`&`, `é`, `"`, `'`, `(`, `-`, `è`, `_`, `ç`) work as `1` to `9` without pressing Shift.
+On a French AZERTY keyboard (as I'm French) the top row keys (`&` `é` `"` `'` `(` `-` `è` `_` `ç`) work as `1` to `9` without pressing Shift.
 
 ### In Wordle
 
 | Key | Action |
 |---|---|
-| Letters | Type a letter in the current row |
-| Backspace | Delete the last letter |
+| Letters | Type a letter in the row |
+| Backspace | Delete the letter |
 | Enter | Validate the word (it must be 5 letters and in the word list) |
-| Ctrl+C | Leave the game and go back to the hub |
+Esc / Ctrl+C | Leave the game and go back to the hub |
 
 You have six attempts. After each guess:
 
-- **Green**: the letter is in the right place.
-- **Yellow**: the letter is in the word, but in another place.
+- **Green**: the letter is in the place.
+
+- **Yellow**: the letter is in the word. In another place.
+
 - **Gray**: the letter is not in the word (or all its copies are already accounted for).
 
 ### In Mastermind
 
-| Key | Action |
+Key | Action |
 |---|---|
 | Letters associated with colors | Type the corresponding color |
-| Backspace | Delete the last color |
+| Backspace | Delete the color |
 | Enter | Validate the combination |
-| Ctrl+C | Leave the game and go back to the hub |
+| Esc / Ctrl+C | Leave the game and go back to the hub |
 
-You have 10 attemps. After each attempts:
+You have 10 attempts. After each attempt:
 
-- The number in the **Red** box on the right correspond to the number of colors that were at their exact positions
+- The number in the **Red** box on the correspond to the number of colors that were at their exact positions
+
 - The number in the **White** box on the right correspond to the number of colors that are in the key (excluding one counted in the **Red** box) but weren't in their right positions.
 
 ### In Snake
 
-| Key | Action |
+Key | Action |
 |---|---|
 | Arrow keys | Move the snake |
-| Ctrl+C | Leave the game and go back to the hub |
+| Esc / Ctrl+C | Leave the game and go back to the hub |
 
 Eat as many apples (red squares) to accumulate points and beat your PB but be careful of walls or your own body.
 
 ## Project structure
 
 ```
+
 Krakos-Game-Hub/
 ├── main.py              # the hub: finds the games
 ├── menu.py              # shows the menu
@@ -128,55 +158,68 @@ Krakos-Game-Hub/
 ├── records.py           # reads and writes the game logs (shared by every game)
 └── games/
     ├── __init__.py      # makes games/ a package (empty)
-    |── mastermind.py    # the Mastemind game
+    |── mastermind.py    # the Mastermind game
     ├── wordle.py        # the Wordle game
     ├── wordle.txt       # solution words for Wordle
     └── wordlist_fives.txt   # accepted guesses for Wordle
         └── logs/
-            └── game_logs.jsonl     # created when a game is saved, hold the records of game
-
+            └── game_logs.jsonl     # created when a game is saved hold the records of game
 ```
 
 ## Adding a game
 
 Every game is a Python file in `games/` that has three things:
 
-1. a `NAME` variable
-2. a variable `GAME_TYPE`: `"win_loss"` if the game ends with a win or a loss (Wordle for exaple), `"score"` if it ends with a score (Snake for example)
-3. a function `play()`, which the hub calls when the player picks the game
+1. A `NAME` variable
+
+2. A variable `GAME_TYPE`: `"win_loss"` if the game ends with a win or a loss (Wordle for example) `"score"` if it ends with a score (Snake for example)
+
+3. A function `play()` which the hub calls when the player picks the game
 
 ```python
+
 # games/my_game.py
+
 from records import save_stat
 
 NAME = "My Game"
-GAME_TYPE = "win_loss"
+
+GAME_TYPE = "
 
 def play():
-    ...
-    save_stat(NAME, "won", duration, {"solution": ...})
+
+...
+
+save_stat(NAME "won" duration, {"solution":...})
+
 ```
 
-`save_stat` (imported from `records.py`) writes the game in the logs (in a .jsonl), so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"`, `"lost"` or `"abandoned"` with its score in the details, and can have its own stats page by defining a function `show_stats()`.
+`save_stat` (imported from `records.py`) writes the game in the logs (in a.jsonl) so it shows up in the stats. A game with `GAME_TYPE = "score"` saves `"finished"` `"lost"` or `"abandoned"` with its score in the details and can have its stats page by defining a function `show_stats()`.
 
-Restart the hub and "My Game" appears in the menu. If your game needs data files, put them in `games/` and build their paths with `Path(__file__).parent`, so they are found wherever the hub is launched from.
+Restart the hub and "My Game" appears in the menu. If your game needs data files put them in `games/`. Build their paths with `Path(__file__).parent` so they are found wherever the hub is launched from.
 
-This automatic discovery applies when running from source. To include a new game
-in the Windows executable, also add it to the frozen game list in `main.py` and
+This automatic discovery applies when running from source. To include a game
+
+in the Windows executable also add it to the frozen game list in `main.py` and
+
 its hidden imports and data files to `.github/workflows/release.yml`.
 
 ## Credits and data
 
-- Wordle allowed guesses list (`wordlist_fives.txt`) and possible answers (`wordle.txt`) are from [John Burkardt's word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/)
-- Wordle is a game created by Josh Wardle and owned by the New York Times, accessible [here](https://www.nytimes.com/games/wordle/index.html)
-- Made for [Hack Club](https://hackclub.com)'s Pixl.
+- Wordle allowed guesses list (`wordlist_fives.txt`) and possible answers (`wordle.txt`) are from [John Burkardts word datasets](https://people.sc.fsu.edu/~jburkardt/datasets/words/)
+
+- Wordle is a game created by Josh Wardle and owned by the New York Times accessible [here](https://www.nytimes.com/games/wordle/index.html)
+
+- Made for [Hack Club](https://hackclub.com)s Pixl.
 
 ## Development status
 
-Working now: Achievement, tho this project is paused as I'm working on something else and Pixl is shutting down
+Working now: Achievement tho this project is paused as I'm working on something and Pixl is shutting down
 
 Idea for later:
 
 - Add more minigames
-- Key reading for other OS (Mac and Linux)
-- A multiplayer, and maybe an Online mode
+
+- Key reading, for other OS (Mac and Linux)
+
+- A multiplayer and maybe an Online mode
